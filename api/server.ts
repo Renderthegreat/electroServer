@@ -56,7 +56,7 @@ const express = require('express');
 
 
 readline.emitKeypressEvents(process.stdin);
-process.stdin.setRawMode(true);
+
 
 async function detectAsyncExe() {
   return [true];
