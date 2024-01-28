@@ -80,7 +80,7 @@ class Host {
   }
   hostDir(type,dir,asDir) {
 
-    let dirPath = path.join('/', dir);
+    let dirPath = path.join('./', dir);
     //dirPath = dirPath.replace(asDir, '');
     const files = fs.readdirSync(dir);
     files.forEach(file => {
