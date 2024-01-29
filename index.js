@@ -56,7 +56,7 @@ const express = require('express');
 
 
 readline.emitKeypressEvents(process.stdin);
-process.stdin.setRawMode(true);
+//process.stdin.setRawMode(true);
 
 async function detectAsyncExe() {
   return [true];
@@ -331,12 +331,19 @@ class Server {
 let myServer = new Server(async (req, res) => {}, "myServer");
 const runtime = new ServerRuntime(apps["myServer"], myServer);
 runtime.Function = async () => {
+  let clicks  = 0
   let host = new Host();
   host.hostDir("get", "server", "/");
   await myServer.start(80);
   await runtime.sleep(250);
   runtime.log("Press (CTRL + Q) to pause. Or press (CTRL + E) to end.", "");
-
+  example = myServer.create("get",'/example', async (req, res) =>{
+    let html = new Content("text/html");
+    clicks++
+    html.contents(` this example page has ${clicks} views`)
+    html.send(req,res)
+    return {failSafe:true}
+  })
   while (!complete) {
     await runtime.sleep(1000);
   }
