@@ -79,12 +79,19 @@ class Host {
 
   }
   hostDir(type,dir,asDir) {
-
+    let asDirPath;
     let dirPath = path.join('/', dir);
+    if(asDir!='/'){
+      asDirPath = path.join('/', asDir);
+    }
+    else{
+      asDirPath = '';
+    }
     //dirPath = dirPath.replace(asDir, '');
     const files = fs.readdirSync(dir);
     files.forEach(file => {
       const filePath = path.join(dir, file);
+      const asFilePath = path.join(asDir, file);
       const stat = fs.statSync(filePath);
       if (stat.isDirectory()) {
         this.hostDir(type,filePath,asDir);
@@ -96,9 +103,10 @@ class Host {
           html.send(req, res);
           return { failSafe: true };
         } 
-        myServer.create(type, `${dirPath}/${file}`, hfile);
+        
+        myServer.create(type, `${asDirPath}/${file}`, hfile);
         if (file === "index.html"){
-          myServer.create(type, `${dirPath}/`, hfile);
+          myServer.create(type, `${asDirPath}/`, hfile);
         }
       } else if (file.endsWith('.js')) {
         const hfile = async (req, res) => {
@@ -117,18 +125,21 @@ class Host {
           html.send(req, res);
           return { failSafe: true };
         } 
-        myServer.create(type, `${dirPath}/${file}`, hfile);
+        myServer.create(type, `${asDirPath}/${file}`, hfile);
       }
       else{
+        let data
         const hfile = async (req, res) => {
           let content = new Content( mime.lookup(file) || 'text/plain');
           let data = await fs.promises.readFile(filePath, 'utf8');
+          
+          //data may be binary
           content.contents(data);
           content.send(req, res)
           return { failSafe: true };
         }
 
-        myServer.create(type, `${dirPath}/${file}`, hfile);
+        myServer.create(type, `${asDirPath}/${file}`, hfile);
       }
     });
   }
@@ -321,9 +332,7 @@ let myServer = new Server(async (req, res) => {}, "myServer");
 const runtime = new ServerRuntime(apps["myServer"], myServer);
 runtime.Function = async () => {
   let host = new Host();
-  host.hostDir("get", "server", "server");
-  myServer.map("/server", "/");
-
+  host.hostDir("get", "server", "/");
   await myServer.start(80);
   await runtime.sleep(250);
   runtime.log("Press (CTRL + Q) to pause. Or press (CTRL + E) to end.", "");
