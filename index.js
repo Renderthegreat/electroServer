@@ -382,7 +382,7 @@ runtime.Function = async () => {
     return { failSafe: true };
   });
   let example2
-  Function(pegioData[0])
+  eval(pegioData[0])
   while (!complete) {
     await runtime.sleep(1000);
   }
