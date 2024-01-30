@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg" xmlns:bx="https://boxy-svg.com">
+  <defs>
+    <filter id="gaussian-blur-filter-1" color-interpolation-filters="sRGB" x="-50%" y="-50%" width="200%" height="200%" bx:preset="gaussian-blur 1 5">
+      <feGaussianBlur stdDeviation="5 5" edgeMode="none"/>
+    </filter>
+    <filter id="filter-1" color-interpolation-filters="sRGB" x="-50%" y="-50%" width="200%" height="200%" bx:preset="gaussian-blur 1 3.1">
+      <feGaussianBlur stdDeviation="3.1 3.1" edgeMode="none"/>
+    </filter>
+    <filter id="gaussian-blur-filter-3" color-interpolation-filters="sRGB" x="-50%" y="-50%" width="200%" height="200%" bx:preset="gaussian-blur 1 3.1">
+      <feGaussianBlur stdDeviation="3.1 3.1" edgeMode="none"/>
+    </filter>
+  </defs>
+  <rect x="77.178" y="101.152" width="268.053" height="268.053" style="fill: rgb(15, 103, 51); filter: url('#gaussian-blur-filter-1'); transform-origin: 345.641px 136.401px;" rx="65.546" ry="65.546"/>
+  <rect x="87.077" y="91.447" width="268.053" height="268.053" style="fill: rgb(25, 170, 85); filter: none;" rx="65.546" ry="65.546"/>
+  <ellipse style="shape-rendering: geometricprecision; filter: url('#filter-1'); fill: rgb(188, 188, 188);" cx="149.209" cy="254.876" rx="43.101" ry="36.591"/>
+  <ellipse style="shape-rendering: geometricprecision; filter: url('#filter-1'); fill: rgb(188, 188, 188);" cx="215.996" cy="264.439" rx="108.874" ry="35.672"/>
+  <ellipse style="shape-rendering: geometricprecision; filter: url('#filter-1'); fill: rgb(188, 188, 188);" cx="286.089" cy="257.256" rx="40.49" ry="27.299"/>
+  <ellipse style="shape-rendering: geometricprecision; filter: url('#filter-1'); fill: rgb(188, 188, 188);" cx="211.595" cy="237.075" rx="54.147" ry="54.891"/>
+  <ellipse style="fill: rgb(255, 255, 255); shape-rendering: geometricprecision; filter: url('#gaussian-blur-filter-3');" cx="160.704" cy="240.044" rx="43.101" ry="36.591"/>
+  <ellipse style="fill: rgb(255, 255, 255); shape-rendering: geometricprecision; filter: url('#gaussian-blur-filter-3');" cx="227.491" cy="249.607" rx="108.874" ry="35.672"/>
+  <ellipse style="fill: rgb(255, 255, 255); shape-rendering: geometricprecision; filter: url('#gaussian-blur-filter-3');" cx="297.584" cy="242.424" rx="40.49" ry="27.299"/>
+  <ellipse style="fill: rgb(255, 255, 255); shape-rendering: geometricprecision; filter: url('#gaussian-blur-filter-3');" cx="223.09" cy="222.243" rx="54.147" ry="54.891"/>
+</svg>

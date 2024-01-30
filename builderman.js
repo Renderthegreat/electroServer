@@ -19,6 +19,6 @@ async function compile(filename,toFile){
       ['@babel/transform-react-jsx', { pragma: 'h' }],
     ],
   })
-  fs.promises.writeFile(toFile, result.code, (err) =>{console.log(err)})
+  fs.promises.writeFile(toFile, result.code, (err) =>{console.error('\x1b[31m'+err)})
 }
 module.exports.compile = compile

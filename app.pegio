@@ -1,7 +1,3 @@
-example2 = myServer.create("get", "/example2", async (req, res) => {
-    let html = new Content("text/html");
-    clicks++;
-    html.contents(` this example page has ${clicks} views`);
-    html.send(req, res);
-    return { failSafe: true };
-  });
+const app = require('./build/app.js')
+// modify as needed!
+app.main(myServer,Content,Host,runtime)

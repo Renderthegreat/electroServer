@@ -57,7 +57,7 @@ const path = require("path");
 const mime = require("mime-types");
 const express = require("express");
 const build = {};
-const imports = {};
+const imports = {app:'./app.jsx'};
 const pegio = ["app.pegio"];
 let pegioData = {};
 async function buildingBlocks() {
@@ -69,7 +69,8 @@ async function buildingBlocks() {
   let i = 0;
   for (impo in imports) {
     i++;
-    build[impo] = await require(imports[impo]);
+    console.log(imports[impo],impo)
+    //build[impo] = await require(imports[impo]);
     await builder.compile(imports[impo], `build/${impo}.js`);
     await sleep(1000);
     console.log(
@@ -89,7 +90,7 @@ async function buildingBlocks() {
       this.name = name;
     }
     async main() {
-      console.log("[Cloud::Labs Edge Function] {(Press CTRL + C) to quit}");
+      console.log("[Cloud::Labs Server Function] {(Press CTRL + C) to quit}");
       //await start()
       await runtime.run();
       await catcherComplete("end1").then(() => this.end());
@@ -278,7 +279,7 @@ class Server {
   }
   async start(port) {
     if (await detectAsyncExe()) {
-      console.log("  ╔╦═\x1b[36m[Server Edge Function] \x1b[0m");
+      console.log("  ╔╦═\x1b[36m[Server Function] \x1b[0m");
       apps[this.name].listen(port, () => {
         console.log(
           `\x1b[37m  ║╠╦═\x1b[38;5;13m[Running on port: ${port}]\n  \x1b[37m║║╠═\x1b[38;5;6mServer running...`,
@@ -368,20 +369,7 @@ class Server {
 let myServer = new Server(async (req, res) => {}, "myServer");
 const runtime = new ServerRuntime(apps["myServer"], myServer);
 runtime.Function = async () => {
-  let clicks = 0;
-  let host = new Host();
-  host.hostDir("get", "server", "/");
-  await myServer.start(80);
-  await runtime.sleep(250);
-  runtime.log("Press (CTRL + Q) to pause. Or press (CTRL + E) to end.", "");
-  example = myServer.create("get", "/example", async (req, res) => {
-    let html = new Content("text/html");
-    clicks++;
-    html.contents(` this example page has ${clicks} views`);
-    html.send(req, res);
-    return { failSafe: true };
-  });
-  let example2
+  
   eval(pegioData[0])
   while (!complete) {
     await runtime.sleep(1000);
