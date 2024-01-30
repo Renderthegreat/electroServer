@@ -1,11 +1,11 @@
-// WARNING: This code is strictly prohibited for distribution under any circumstances.
-// Distribution of this code is expressly forbidden.
-// Author: Renderlabs::Cloud
-// Date: 1/26/2024
-// ----------------------------------------------------------------------------
-// This file is part of the Renderlabs::Cloud library.
-// Any attempt to modify or distribute this code is a violation and may result in legal action.
-// ----------------------------------------------------------------------------
+/**
+ * @author renderlabs::cloud
+ * @copyright (c) [2024] [RENDERLABS]
+ * @license MIT
+ *
+ * You are required to keep this header intact.
+ * You are permitted to use this code.
+ */
 
 //██████▛█▛█▜▛▛▛▛▛▛▛▛███████████▜▜▜▜▜▜▜▜▛█▜▛█▜▛█▛████████████
 //█▙█▟▙█▟▛▙█▜▜▟▛█▜▛▛▛█▜█▟████▜▛██▜▜▜▛█▜▛▛▛▛▛▛▛█▜▙██▟▙█▟▙█▙█▜▟█
@@ -41,6 +41,9 @@
 ╚██████╗███████╗╚██████╔╝╚██████╔╝██████╔╝╚═╝╚═╝███████╗██║  ██║██████╔╝███████║
  ╚═════╝╚══════╝ ╚═════╝  ╚═════╝ ╚═════╝       ╚══════╝╚═╝  ╚═╝╚═════╝ ╚══════╝
 */
+
+buildingBlocks();
+
 console.time("║uptime");
 const apps = {};
 let catcher = [];
@@ -49,14 +52,61 @@ let complete = false;
 let frozen = false;
 let permafreeze = false;
 const readline = require("readline");
-const fs = require('fs');
-const path = require('path');
-const mime = require('mime-types');
-const express = require('express');
+const fs = require("fs");
+const path = require("path");
+const mime = require("mime-types");
+const express = require("express");
+const build = {};
+const imports = {};
+const pegio = ["app.pegio"];
+let pegioData = {};
+async function buildingBlocks() {
+  const builder = require("./builderman.js");
+  await builder.compile("filter.jsx", "build/filter.js");
+  await sleep(1000);
 
+  build.filter = await require("./build/filter.js");
+  let i = 0;
+  for (impo in imports) {
+    i++;
+    build[impo] = await require(imports[impo]);
+    await builder.compile(imports[impo], `build/${impo}.js`);
+    await sleep(1000);
+    console.log(
+      `║ ${i} of ${
+        Object.keys(imports).length
+      } imported and compiled: ${impo}.`,
+    );
+  }
+  for (peg in pegio) {
+    let data = await fs.promises.readFile(pegio[peg], "utf8");
+    pegioData[peg] = data;
+  }
+
+  //SERVER PROCESS HERE!!!
+  class myServerProcess {
+    constructor(name) {
+      this.name = name;
+    }
+    async main() {
+      console.log("[Cloud::Labs Edge Function] {(Press CTRL + C) to quit}");
+      //await start()
+      await runtime.run();
+      await catcherComplete("end1").then(() => this.end());
+    }
+    end() {
+      console.log("[All processes complete.]");
+    }
+  }
+  const myProcess = new Process(new myServerProcess("myServer"));
+  myProcess.start();
+}
+async function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
 readline.emitKeypressEvents(process.stdin);
-//process.stdin.setRawMode(true);
+process.stdin.setRawMode(true);
 
 async function detectAsyncExe() {
   return [true];
@@ -75,69 +125,65 @@ async function catcherComplete(pro) {
   });
 }
 class Host {
-  constructor(){
-
-  }
-  hostDir(type,dir,asDir) {
+  constructor() {}
+  hostDir(type, dir, asDir) {
     let asDirPath;
-    let dirPath = path.join('/', dir);
-    if(asDir!='/'){
-      asDirPath = path.join('/', asDir);
-    }
-    else{
-      asDirPath = '';
+    let dirPath = path.join("/", dir);
+    if (asDir != "/") {
+      asDirPath = path.join("/", asDir);
+    } else {
+      asDirPath = "";
     }
     //dirPath = dirPath.replace(asDir, '');
     const files = fs.readdirSync(dir);
-    files.forEach(file => {
+    files.forEach((file) => {
       const filePath = path.join(dir, file);
       const asFilePath = path.join(asDir, file);
       const stat = fs.statSync(filePath);
       if (stat.isDirectory()) {
-        this.hostDir(type,filePath,asDir);
-      } else if (file.endsWith('.html')) {
+        this.hostDir(type, filePath, asDir);
+      } else if (file.endsWith(".html")) {
         const hfile = async (req, res) => {
           let html = new Content("text/html");
-          let data = await fs.promises.readFile(filePath, 'utf8');
+          let data = await fs.promises.readFile(filePath, "utf8");
           html.contents(data);
           html.send(req, res);
           return { failSafe: true };
-        } 
-        
+        };
+
         myServer.create(type, `${asDirPath}/${file}`, hfile);
-        if (file === "index.html"){
+        if (file === "index.html") {
           myServer.create(type, `${asDirPath}/`, hfile);
         }
-      } else if (file.endsWith('.js')) {
+      } else if (file.endsWith(".js")) {
         const hfile = async (req, res) => {
           let html = new Content("text/javascript");
-          let data = await fs.promises.readFile(filePath, 'utf8');
+          let data = await fs.promises.readFile(filePath, "utf8");
           html.contents(data);
           html.send(req, res);
           return { failSafe: true };
-        } 
+        };
         myServer.create(type, `${dirPath}/${file}`, hfile);
-      } else if (file.endsWith('.css')){
+      } else if (file.endsWith(".css")) {
         const hfile = async (req, res) => {
           let html = new Content("text/css");
-          let data = await fs.promises.readFile(filePath, 'utf8');
+          let data = await fs.promises.readFile(filePath, "utf8");
           html.contents(data);
           html.send(req, res);
           return { failSafe: true };
-        } 
+        };
         myServer.create(type, `${asDirPath}/${file}`, hfile);
-      }
-      else{
-        let data
+      } else {
+        let data;
         const hfile = async (req, res) => {
-          let content = new Content( mime.lookup(file) || 'text/plain');
-          let data = await fs.promises.readFile(filePath, 'utf8');
-          
-          //data may be binary
+          let content = new Content(mime.lookup(file) || "text/plain");
+          let data = await fs.promises.readFile(filePath, "utf8");
+
+          //data may be binary fix later lol:O
           content.contents(data);
-          content.send(req, res)
+          content.send(req, res);
           return { failSafe: true };
-        }
+        };
 
         myServer.create(type, `${asDirPath}/${file}`, hfile);
       }
@@ -188,7 +234,7 @@ class ServerRuntime {
 }
 
 class Server {
-  router = express.Router()
+  router = express.Router();
   constructor(func, name) {
     permafreeze = false;
     this.paused = false;
@@ -230,15 +276,6 @@ class Server {
       );
     }
   }
-  map(path1,path2){
-
-    this.router.use(path1, (req, res, next) => {
-      req.url = req.url.replace(path1, path2);
-      next();
-    });
-    apps[this.name].use(this.router);
-
-  }
   async start(port) {
     if (await detectAsyncExe()) {
       console.log("  ╔╦═\x1b[36m[Server Edge Function] \x1b[0m");
@@ -252,17 +289,16 @@ class Server {
       console.log("\x1b[37m  ║║╠═\x1b[38;5;10mUse await to start the server.");
     }
     process.stdin.on("keypress", (str, key) => {
-      if (key.ctrl && key.name === "q"&&this.active) {
+      if (key.ctrl && key.name === "q" && this.active) {
         permafreeze = !permafreeze;
 
-        this.paused = !this.paused
+        this.paused = !this.paused;
         this.repause();
-
       } else {
       }
     });
     process.stdin.on("keypress", (str, key) => {
-      if (key.ctrl && key.name === "c"&&this.active) {
+      if (key.ctrl && key.name === "c" && this.active) {
         if (!permafreeze) {
           this.end();
           permafreeze = true;
@@ -271,7 +307,7 @@ class Server {
       }
     });
     process.stdin.on("keypress", (str, key) => {
-      if (key.ctrl && key.name === "e"&&this.active) {
+      if (key.ctrl && key.name === "e" && this.active) {
         if (!complete) {
           complete = !false;
         } else {
@@ -286,7 +322,12 @@ class Server {
     } else if (frozen) {
       res.send("The app is frozen. Please try again later.");
     } else {
-      next();
+      let html = build.filter.rss(req, res, next);
+      if (html) {
+        let newHtml = new Content("text/html");
+        newHtml.contents(html.html);
+        newHtml.send(req, res);
+      }
     }
   }
   pause() {
@@ -297,13 +338,12 @@ class Server {
     frozen = false;
     console.log("\x1b[37m  ║║╠═\x1b[38;5;208mApp connections unpaused");
   }
-  paused = false
-  repause(){
-    if(this.paused){
-      this.pause()
-    }
-    else{
-      this.unpause()
+  paused = false;
+  repause() {
+    if (this.paused) {
+      this.pause();
+    } else {
+      this.unpause();
     }
   }
   end() {
@@ -321,50 +361,33 @@ class Server {
     delete this.start;
     this.active = false;
   }
-  active=true
-
+  active = true;
 }
-
-
 
 //APP
 let myServer = new Server(async (req, res) => {}, "myServer");
 const runtime = new ServerRuntime(apps["myServer"], myServer);
 runtime.Function = async () => {
-  let clicks  = 0
+  let clicks = 0;
   let host = new Host();
   host.hostDir("get", "server", "/");
   await myServer.start(80);
   await runtime.sleep(250);
   runtime.log("Press (CTRL + Q) to pause. Or press (CTRL + E) to end.", "");
-  example = myServer.create("get",'/example', async (req, res) =>{
+  example = myServer.create("get", "/example", async (req, res) => {
     let html = new Content("text/html");
-    clicks++
-    html.contents(` this example page has ${clicks} views`)
-    html.send(req,res)
-    return {failSafe:true}
-  })
+    clicks++;
+    html.contents(` this example page has ${clicks} views`);
+    html.send(req, res);
+    return { failSafe: true };
+  });
+  let example2
+  eval(pegioData[0])
   while (!complete) {
     await runtime.sleep(1000);
   }
+  
   myServer.end();
   catcher.push("end1");
 };
-
-class myServerProcess {
-  constructor(name) {
-    this.name = name;
-  }
-  async main() {
-    console.log("[Cloud::Labs Edge Function] {(Press CTRL + C) to quit}");
-    await runtime.run();
-    await catcherComplete("end1").then(() => this.end());
-  }
-  end() {
-    console.log("[All processes complete.]");
-  }
-}
-const myProcess = new Process(new myServerProcess("myServer"));
-myProcess.start();
-
 
