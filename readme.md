@@ -50,6 +50,7 @@ The Nexus Server Program is a robust and versatile server application designed t
 - Add additional functionality by creating new modules or modifying existing ones.
 - Integrate third-party libraries or frameworks to extend the capabilities of your server application.
 - Configure server settings such as port number, logging behavior, and error handling to suit your requirements.
+- Create your own plugin to share to the world with ease
 
 #### 4. Deployment:
 
