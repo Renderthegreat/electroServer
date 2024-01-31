@@ -41,7 +41,7 @@ The Nexus Server Program is a robust and versatile server application designed t
 #### 2. Configuration:
 
 - Customize the `index.js` file to define your server's routes, middleware, and server logic.
-- Modify the `App.jsx` file to create your application's components and define their behavior.
+- Modify the `app.jsx` file to create your application's components and define their behavior.
 - Adjust the `filter.jsx` file to implement custom request filtering or processing with ease.
 
 #### 3. Customization:
@@ -59,7 +59,7 @@ The Nexus Server Program is a robust and versatile server application designed t
 
 #### Example:
 
-- Here is an example of how you can create an `App.jsx`:
+- Here is an example of how you can create an `app.jsx`:
   ```jsx
   const { h } = require("preact");
   const { render } = require("preact-render-to-string");
