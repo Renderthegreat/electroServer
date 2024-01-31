@@ -1,5 +1,5 @@
-async function include(IPATH,ISERVER,ICONTENT,IHOST,IRUNTIME){
+async function include (IPATH,ISERVER,ICONTENT,IHOST,IRUNTIME) {
   const app = require(IPATH)
-  // modify as needed!
+  // modifications most likely are not needed in any situation but feel free to edit this if you need to.
   app.main(ISERVER,ICONTENT,IHOST,IRUNTIME)
 }

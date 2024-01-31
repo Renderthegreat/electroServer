@@ -351,8 +351,7 @@ class Server {
 let myServer = new Server(async (req, res) => {}, "myServer");
 const runtime = new ServerRuntime(apps["myServer"], myServer);
 runtime.Function = async () => {
-  
-  eval(pegioData[0])
+  const loadPegio = eval(pegioData[0])//loads the pegio file
   include('./build/app.jsx',myServer,Content,Host,runtime)
   while (!complete) {
     await runtime.sleep(1000);
