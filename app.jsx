@@ -1,9 +1,10 @@
 const { h } = require( "preact" );
 const { render } = require("preact-render-to-string");
 const r = render
+let clicks = 0;
 function main(Server,Content,Host,runtime){
     let example = Server.create("get", "/example", async (req, res) => {
-    let clicks = 0;
+    
 
     let html = new Content("text/html");
     clicks++;
@@ -11,7 +12,7 @@ function main(Server,Content,Host,runtime){
       <html>
         <body>
           <div>
-            <h1> `this page has ${clicks} views.` </h1>
+            <h1> this page has {clicks} views. </h1>
           </div>
           <style>
           

@@ -9,23 +9,23 @@ var _require = require("preact"),
 var _require2 = require("preact-render-to-string"),
   render = _require2.render;
 var r = render;
+var clicks = 0;
 function main(Server, Content, Host, runtime) {
   var example = Server.create("get", "/example", /*#__PURE__*/function () {
     var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(req, res) {
-      var clicks, html, data;
+      var html, data;
       return _regeneratorRuntime().wrap(function _callee$(_context) {
         while (1) switch (_context.prev = _context.next) {
           case 0:
-            clicks = 0;
             html = new Content("text/html");
             clicks++;
-            data = h("html", null, h("body", null, h("div", null, h("h1", null, " `this page has $", clicks, " views.` ")), h("style", null)));
+            data = h("html", null, h("body", null, h("div", null, h("h1", null, " this page has ", clicks, " views. ")), h("style", null)));
             html.contents(r(data));
             html.send(req, res);
             return _context.abrupt("return", {
               failSafe: true
             });
-          case 7:
+          case 6:
           case "end":
             return _context.stop();
         }
