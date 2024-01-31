@@ -13,7 +13,7 @@ function main(Server,Content,Host,runtime){
     clicks++;
     let pluralMarker
     if(clicks == 1){
-      pluralMarker = ""
+      pluralMarker = ". Congratulations! You have created your first plugin"
     }
     else{
       pluralMarker = "s"

@@ -21,7 +21,7 @@ function main(Server, Content, Host, runtime) {
             html = new Content("text/html");
             clicks++;
             if (clicks == 1) {
-              pluralMarker = "";
+              pluralMarker = ". Congratulations! You have created your first plugin";
             } else {
               pluralMarker = "s";
             }
