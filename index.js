@@ -20,15 +20,72 @@ const imports = {app:'./app.jsx'};
 buildingBlocks();
 
 console.time("║uptime");
+const fs = require("fs");
+//work in process
+let alloc = '';
+let allocIndexes = {};
+async function clear(){
+  await fs.promises.writeFile('alloc.turntable', '');
+}
+
+async function alloced(name, startIndex, endIndex, value) {
+  let data = await fs.promises.readFile('alloc.turntable', 'utf8');
+  alloc = data;
+  allocIndexes[name] = { startIndex, endIndex };
+  alloc = alloc.slice(0, startIndex) + value + alloc.slice(endIndex);
+
+  await fs.promises.writeFile('alloc.turntable', alloc);
+}
+
+async function dealloced(name, startIndex, endIndex) {
+  delete allocIndexes[name];
+  let open = await fs.promises.readFile('alloc.turntable', 'utf8');
+  let data = open
+  let porti = data.slice(startIndex, endIndex);
+  console.log('porti: ' + porti);
+  
+  data = data.slice(0, startIndex) + data.slice(endIndex,data.length); 
+  for (let index in allocIndexes) {
+    if (allocIndexes[index].startIndex > endIndex) {
+      allocIndexes[index].startIndex -= (endIndex - startIndex);
+    }
+    if (allocIndexes[index].endIndex > endIndex) {
+      allocIndexes[index].endIndex -= (endIndex - startIndex);
+    }
+  }
+  porti = open.replace(data,'')
+  console.log('data after removal: ' + porti);
+  await fs.promises.writeFile('alloc.turntable', data);
+  return porti;
+}
+
+
+
+async function tester(){
+  alloced('test', 0, 11, 'hello world');
+  alloced('test2', 12, 14, '..');
+  var test_dealloc = await (dealloced('test',0,11))
+  console.log('test '+test_dealloc)
+  var test_dealloc2 = await (dealloced('test',12,14))
+  console.log('test2 '+test_dealloc2)
+  
+}
+tester()
+
 const apps = {};
 let catcher = [];
 let result;
 let complete = false;
 let frozen = false;
 let permafreeze = false;
-const readline = require("readline");
-const fs = require("fs");
-const path = require("path");
+let readlineDealloc = require("readline");
+const readline = {}
+readline.emitKeypressEvents = readlineDealloc.emitKeypressEvents
+readlineDealloc = null;
+
+let pathDealloc = require("path");
+const path = {join:pathDealloc.join}
+pathDealloc = null;
 const mime = require("mime-types");
 const express = require("express");
 const build = {};
@@ -87,7 +144,16 @@ async function buildingBlocks() {
 async function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
-
+async function waitForCompletion() {
+    return new Promise(resolve => {
+        const interval = setInterval(() => {
+            if (complete) {
+                clearInterval(interval);
+                resolve();
+            }
+        }, 1000); 
+    });
+}
 readline.emitKeypressEvents(process.stdin);
 process.stdin.setRawMode(true);
 
@@ -281,6 +347,14 @@ class Server {
       }
     });
     process.stdin.on("keypress", (str, key) => {
+      if (key.ctrl && key.name === "d" && this.active) {
+        console.log(process.memoryUsage())
+
+        
+      } else {
+      }
+    });
+    process.stdin.on("keypress", (str, key) => {
       if (key.ctrl && key.name === "c" && this.active) {
         if (!permafreeze) {
           this.end();
@@ -353,9 +427,7 @@ const runtime = new ServerRuntime(apps["myServer"], myServer);
 runtime.Function = async () => {
   const loadPegio = eval(pegioData[0])//loads the pegio file
   include('./build/app.jsx',myServer,Content,Host,runtime)
-  while (!complete) {
-    await runtime.sleep(1000);
-  }
+  await waitForCompletion();
   
   myServer.end();
   catcher.push("end1");
