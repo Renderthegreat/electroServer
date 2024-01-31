@@ -70,7 +70,7 @@ async function tester(){
   console.log('test2 '+test_dealloc2)
   
 }
-tester()
+//tester()
 
 const apps = {};
 let catcher = [];
