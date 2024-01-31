@@ -10,6 +10,7 @@ var _require2 = require("preact-render-to-string"),
   render = _require2.render;
 var r = render;
 var clicks = 0;
+var styles = "h1 {\n  color: red;\n}";
 function main(Server, Content, Host, runtime) {
   var example = Server.create("get", "/example", /*#__PURE__*/function () {
     var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(req, res) {
@@ -19,7 +20,7 @@ function main(Server, Content, Host, runtime) {
           case 0:
             html = new Content("text/html");
             clicks++;
-            data = h("html", null, h("body", null, h("div", null, h("h1", null, " this page has ", clicks, " views. ")), h("style", null)));
+            data = h("html", null, h("body", null, h("div", null, h("h1", null, "This example page has ", clicks, " views. ")), h("style", null, styles)));
             html.contents(r(data));
             html.send(req, res);
             return _context.abrupt("return", {

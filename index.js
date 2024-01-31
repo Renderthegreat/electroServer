@@ -34,25 +34,29 @@ const express = require("express");
 const build = {};
 const pegio = ["app.pegio"];
 let pegioData = {};
-
+let updateTimeout = 100
+console.log("║");
+console.log("╠═\x1b[38;5;197m[starting]...\x1b[37m");
 
 
 async function buildingBlocks() {
   const builder = require("./builderman.js");
   await builder.compile("filter.jsx", "build/filter.jsx");
-  await sleep(1000);
+  await sleep(updateTimeout);
 
   build.filter = await require("./build/filter.jsx");
   let i = 0;
   for (impo in imports) {
     i++;
-    
-    await builder.compile(imports[impo], `build/${impo}.jsx`);
-    await sleep(1000);
     console.log(
-      `║ ${i} of ${
+      `║ \x1b[38;5;10mCompiling: \x1b[38;5;38m'${impo}'\x1b[37m =>`,
+    );
+    await builder.compile(imports[impo], `build/${impo}.jsx`);
+    await sleep(updateTimeout);
+    console.log(
+      `║ \x1b[38;5;209m${i} \x1b[38;5;6mof \x1b[38;5;209m${
         Object.keys(imports).length
-      } imported and compiled: ${impo}.`,
+      } \x1b[38;5;10mImported and compiled:	\x1b[38;5;38m'${impo}'\x1b[37m =>`,
     );
     
   }
@@ -68,7 +72,7 @@ async function buildingBlocks() {
       this.name = name;
     }
     async main() {
-      console.log("[Cloud::Labs Server Function] {(Press CTRL + C) to quit}");
+      console.log("╚═╗[Cloud::Labs Server Function] {(Press CTRL + C) to quit}");
       //await start()
       await runtime.run();
       await catcherComplete("end1").then(() => this.end());
@@ -257,7 +261,7 @@ class Server {
   }
   async start(port) {
     if (await detectAsyncExe()) {
-      console.log("  ╔╦═\x1b[36m[Server Function] \x1b[0m");
+      console.log("  ╠╦═\x1b[36m[Server Function] \x1b[0m");
       apps[this.name].listen(port, () => {
         console.log(
           `\x1b[37m  ║╠╦═\x1b[38;5;13m[Running on port: ${port}]\n  \x1b[37m║║╠═\x1b[38;5;6mServer running...`,
