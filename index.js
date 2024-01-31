@@ -349,6 +349,7 @@ const runtime = new ServerRuntime(apps["myServer"], myServer);
 runtime.Function = async () => {
   
   eval(pegioData[0])
+  include('./build/app.jsx',myServer,Content,Host,runtime)
   while (!complete) {
     await runtime.sleep(1000);
   }
