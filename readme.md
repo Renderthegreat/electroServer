@@ -4,10 +4,9 @@
 
 ### Introduction:
 
-**Title:** Nexus Server Program  
-**Directed by:** [Your Name]  
+**Title:** Nexus Server Program
 **Produced by:** Renderlabs::Cloud  
-**Release Date:** [Date]
+**Release Date:** [2024/1/30]
 
 ---
 
