@@ -22,7 +22,7 @@ buildingBlocks();
 console.time("║uptime");
 const fs = require("fs");
 //work in process
-let alloc = '';
+/*let alloc = '';
 let allocIndexes = {};
 async function clear(){
   await fs.promises.writeFile('alloc.turntable', '');
@@ -71,7 +71,7 @@ async function tester(){
   
 }
 //tester()
-
+*/
 const apps = {};
 let catcher = [];
 let result;
