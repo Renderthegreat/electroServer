@@ -21,9 +21,8 @@ function main(Server,Content,Host,runtime){
             {styles}
           </style>
         </body>
-        
       </html>
-    
+
     html.contents(r(data));
     html.send(req, res);
     return { failSafe: true }; //tells the server to return a message if none is returned.

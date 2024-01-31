@@ -6,6 +6,7 @@
  * You are required to keep this header intact.
  * You are permitted to use this code.
  */
+const fileLogging = false //set to true in production
 const imports = {app:'./app.jsx'};
 const plugins = {example:'plugins/example/'};
 /*
@@ -92,6 +93,13 @@ const build = {};
 const pegio = ["app.pegio"];
 let pegioData = {};
 let updateTimeout = 100
+async function fileLog(file, data){
+  if(fileLogging){
+    logs = await fs.promises.readFile(file, 'utf8');
+    logs = logs + '\n' + data;
+    await fs.promises.writeFile(file, logs);
+  }
+}
 console.log("║");
 console.log("╠═\x1b[38;5;197m[starting]...\x1b[37m");
 
@@ -338,7 +346,8 @@ class Server {
           console.log("\x1b[37m  ║║╠═\x1b[31mRequest incomplete.");
         } catch (e) {}
       }
-      console.log("\x1b[37m  ║║╠═\x1b[38;5;10mRequest complete.");
+      console.log(`\x1b[37m  ║║╠═\x1b[38;5;10mRequest complete: ${req.method} ${req.url} `);
+      fileLog("server.log", `New request: ${req.method} ${req.url} ${req.ip}`);
     });
   }
 
@@ -408,7 +417,8 @@ class Server {
     } else if (frozen) {
       res.send("The app is frozen. Please try again later.");
     } else {
-      let html = build.filter.rss(req, res, next);
+      let html = await build.filter.rss(req, res, next);
+      
       if (html) {
         let newHtml = new Content("text/html");
         newHtml.contents(html.html);

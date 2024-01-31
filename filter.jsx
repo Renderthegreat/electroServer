@@ -1,13 +1,32 @@
 const { h } = require( "preact" );
 const { render } = require("preact-render-to-string");
 const r = render
-function rss(req, res, next){
+const fs = require("fs")
+let banlist
+async function setup(){
+  banlist = await bannef()
+}
+
+
+async function bannef(){
+  let banlistf = await fs.promises.readFile("banlist.txt", "utf8")
+
+  return (banlistf)
+}
+async function rss(req, res, next){
   if (req.path == '/test' ){
     let result = <h1>Hello World</h1>
     return {html:r(result)}
   }
   else{
-    next()
+    
+    if(banlist.includes(req.ip)){
+      let result = <h1>You are banned from this site</h1>
+    
+      return {html:r(result)}
+    }
+    else{next()}
   }
 } 
+setup()
 module.exports.rss = rss
