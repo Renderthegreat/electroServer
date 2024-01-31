@@ -7,7 +7,7 @@
  * You are permitted to use this code.
  */
 const imports = {app:'./app.jsx'};
-
+const plugins = {example:'plugins/example/'};
 /*
  ██████╗██╗      ██████╗ ██╗   ██╗██████╗       ██╗      █████╗ ██████╗ ███████╗
 ██╔════╝██║     ██╔═══██╗██║   ██║██╔══██╗██╗██╗██║     ██╔══██╗██╔══██╗██╔════╝
@@ -109,7 +109,6 @@ async function buildingBlocks() {
       `║ \x1b[38;5;10mCompiling: \x1b[38;5;38m'${impo}'\x1b[37m =>`,
     );
     await builder.compile(imports[impo], `build/${impo}.jsx`);
-    await sleep(updateTimeout);
     console.log(
       `║ \x1b[38;5;209m${i} \x1b[38;5;6mof \x1b[38;5;209m${
         Object.keys(imports).length
@@ -117,20 +116,49 @@ async function buildingBlocks() {
     );
     
   }
+  i = 0;
+  for (item in plugins){
+    i++;
+    let plugin = plugins[item];
+    const files = fs.readdirSync(plugin);
+    const pluginObject = fs.readFileSync(plugin + 'plugin.json', 'utf8');
+    const pluginData = JSON.parse(pluginObject);
+    const pluginName = pluginData.strictName;
+    const pluginEnabled = pluginData.enabled;
+    const pluginLooseName = pluginData.name;
+    const pluginSubfiles = pluginData.subfiles;
+    let i2 = 0;
+    const allFiles = Object.assign(files, pluginSubfiles);
+    if (pluginEnabled){
+      for(file in allFiles){
+        if(!allFiles[file].includes("plugin.json")&&allFiles[file].includes(".jsx")){
+          builder.compile(plugin + allFiles[file], `plugins/${pluginName}/build/${allFiles[file]}`);
+          i2++
+          
+        }
+      }
+      console.log(
+            `║ \x1b[38;5;209m${i} \x1b[38;5;6mof \x1b[38;5;209m${
+            Object.keys(plugins).length
+            } \x1b[38;5;10mPlugins imported and compiled:	\x1b[38;5;38m'${pluginLooseName}'\x1b[37m =>`,
+      );
+    }
+    
+  }
   for (peg in pegio) {
     let data = await fs.promises.readFile(pegio[peg], "utf8");
     pegioData[peg] = data;
   }
-  build[impo] = await require(`./build/${impo}.jsx`);
+  //build[impo] = await require(`./build/${impo}.jsx`);
 
   //SERVER PROCESS HERE!!!
+  //Create your own server here! (if you understand it of course)
   class myServerProcess {
     constructor(name) {
       this.name = name;
     }
     async main() {
       console.log("╚═╗[Cloud::Labs Server Function] {(Press CTRL + C) to quit}");
-      //await start()
       await runtime.run();
       await catcherComplete("end1").then(() => this.end());
     }
@@ -183,6 +211,7 @@ class Host {
     } else {
       asDirPath = "";
     }
+    console.log(dir)
     //dirPath = dirPath.replace(asDir, '');
     const files = fs.readdirSync(dir);
     files.forEach((file) => {
@@ -426,9 +455,9 @@ let myServer = new Server(async (req, res) => {}, "myServer");
 const runtime = new ServerRuntime(apps["myServer"], myServer);
 runtime.Function = async () => {
   const loadPegio = eval(pegioData[0])//loads the pegio file
-  include('./build/app.jsx',myServer,Content,Host,runtime)
+  include('./build/app.jsx',myServer,Content,Host,runtime) //loads the app
+  include('./plugins/example/build/plugin.jsx',myServer,Content,Host,runtime)//loads the plugin example
   await waitForCompletion();
-  
   myServer.end();
   catcher.push("end1");
 };
