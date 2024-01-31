@@ -17,7 +17,7 @@ const plugins = {example:'plugins/example/'};
 ╚██████╗███████╗╚██████╔╝╚██████╔╝██████╔╝╚═╝╚═╝███████╗██║  ██║██████╔╝███████║
  ╚═════╝╚══════╝ ╚═════╝  ╚═════╝ ╚═════╝       ╚══════╝╚═╝  ╚═╝╚═════╝ ╚══════╝
 */
-
+console.log(' ⚡️  [buildingBlocks] Starting up...');
 buildingBlocks();
 
 console.time("║uptime");
@@ -100,7 +100,7 @@ async function fileLog(file, data){
     await fs.promises.writeFile(file, logs);
   }
 }
-console.log("║");
+console.log("╔╝");
 console.log("╠═\x1b[38;5;197m[starting]...\x1b[37m");
 
 
@@ -113,9 +113,6 @@ async function buildingBlocks() {
   let i = 0;
   for (impo in imports) {
     i++;
-    console.log(
-      `║ \x1b[38;5;10mCompiling: \x1b[38;5;38m'${impo}'\x1b[37m =>`,
-    );
     await builder.compile(imports[impo], `build/${impo}.jsx`);
     console.log(
       `║ \x1b[38;5;209m${i} \x1b[38;5;6mof \x1b[38;5;209m${
@@ -172,6 +169,7 @@ async function buildingBlocks() {
     }
     end() {
       console.log("[All processes complete.]");
+      process.exit(0);
     }
   }
   const myProcess = new Process(new myServerProcess("myServer"));
@@ -219,7 +217,7 @@ class Host {
     } else {
       asDirPath = "";
     }
-    console.log(dir)
+    
     //dirPath = dirPath.replace(asDir, '');
     const files = fs.readdirSync(dir);
     files.forEach((file) => {

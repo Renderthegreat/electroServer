@@ -11,11 +11,18 @@ function main(Server,Content,Host,runtime){
 
     let html = new Content("text/html");
     clicks++;
+    let pluralMarker
+    if(clicks == 1){
+      pluralMarker = ""
+    }
+    else{
+      pluralMarker = "s"
+    }
     let data = 
       <html>
         <body>
           <div>
-            <h1>This example page has {clicks} views. </h1>
+            <h1>This example page has {clicks} view{pluralMarker}. </h1>
           </div>
           <style>
             {styles}

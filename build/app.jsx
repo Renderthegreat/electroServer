@@ -14,19 +14,24 @@ var styles = "h1 {\n  color: red;\n}";
 function main(Server, Content, Host, runtime) {
   var example = Server.create("get", "/example", /*#__PURE__*/function () {
     var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(req, res) {
-      var html, data;
+      var html, pluralMarker, data;
       return _regeneratorRuntime().wrap(function _callee$(_context) {
         while (1) switch (_context.prev = _context.next) {
           case 0:
             html = new Content("text/html");
             clicks++;
-            data = h("html", null, h("body", null, h("div", null, h("h1", null, "This example page has ", clicks, " views. ")), h("style", null, styles)));
+            if (clicks == 1) {
+              pluralMarker = "";
+            } else {
+              pluralMarker = "s";
+            }
+            data = h("html", null, h("body", null, h("div", null, h("h1", null, "This example page has ", clicks, " view", pluralMarker, ". ")), h("style", null, styles)));
             html.contents(r(data));
             html.send(req, res);
             return _context.abrupt("return", {
               failSafe: true
             });
-          case 6:
+          case 7:
           case "end":
             return _context.stop();
         }
