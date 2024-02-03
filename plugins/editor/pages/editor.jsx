@@ -46,13 +46,13 @@ function main(key, Server, Content, Host, runtime) {
     json.send(req, res);
     return { failSafe: true };
   });
-  /*Server.create("get", `/editor/pages/${key}/`, async (req, res) => {
+  Server.create("get", `/editor/pages/${key}/`, async (req, res) => {
     let html = new Content("text/html");
     let data = await fs.promises.readFile(__dirname+'/editor/index.html','utf8')
     html.contents(data)
     html.send(req, res)
     return {failSafe:true}
-  });*/
+  });
   host.hostDir("get", __dirname + "/editor", `editor/pages/${key}`);
   
   //console.log(__dirname.replace( 'plugins/editor/build/pages','')+'server/')

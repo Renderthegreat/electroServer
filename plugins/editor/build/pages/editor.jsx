@@ -73,45 +73,64 @@ function main(key, Server, Content, Host, runtime) {
       return _ref.apply(this, arguments);
     };
   }());
-  /*Server.create("get", `/editor/pages/${key}/`, async (req, res) => {
-    let html = new Content("text/html");
-    let data = await fs.promises.readFile(__dirname+'/editor/index.html','utf8')
-    html.contents(data)
-    html.send(req, res)
-    return {failSafe:true}
-  });*/
+  Server.create("get", "/editor/pages/".concat(key, "/"), /*#__PURE__*/function () {
+    var _ref2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(req, res) {
+      var html, data;
+      return _regeneratorRuntime().wrap(function _callee2$(_context2) {
+        while (1) switch (_context2.prev = _context2.next) {
+          case 0:
+            html = new Content("text/html");
+            _context2.next = 3;
+            return fs.promises.readFile(__dirname + '/editor/index.html', 'utf8');
+          case 3:
+            data = _context2.sent;
+            html.contents(data);
+            html.send(req, res);
+            return _context2.abrupt("return", {
+              failSafe: true
+            });
+          case 7:
+          case "end":
+            return _context2.stop();
+        }
+      }, _callee2);
+    }));
+    return function (_x3, _x4) {
+      return _ref2.apply(this, arguments);
+    };
+  }());
   host.hostDir("get", __dirname + "/editor", "editor/pages/".concat(key));
 
   //console.log(__dirname.replace( 'plugins/editor/build/pages','')+'server/')
   Server.create("get", "/editor/pages/".concat(key, "/edit"), /*#__PURE__*/function () {
-    var _ref2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(req, res) {
+    var _ref3 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(req, res) {
       var html, _data, _html, _data2, file;
-      return _regeneratorRuntime().wrap(function _callee2$(_context2) {
-        while (1) switch (_context2.prev = _context2.next) {
+      return _regeneratorRuntime().wrap(function _callee3$(_context3) {
+        while (1) switch (_context3.prev = _context3.next) {
           case 0:
             if (enabled) {
-              _context2.next = 8;
+              _context3.next = 8;
               break;
             }
             html = new Content("text/html");
             _data = h("html", null, h("body", null, h("h1", null, "Connection closed.")), h("style", null, "h1 {\n            color: red;\n            font: 'Times New Roman', Times, serif;\n          }\n          body{\n            font-family: Arial, Helvetica, sans-serif;\n            background-color: #f1f1f1;\n          }"));
             html.contents(r(_data));
             html.send(req, res);
-            return _context2.abrupt("return", {
+            return _context3.abrupt("return", {
               failSafe: true
             });
           case 8:
             _html = new Content("text/html");
-            _context2.prev = 9;
-            _context2.next = 12;
+            _context3.prev = 9;
+            _context3.next = 12;
             return fs.promises.readFile(__dirname.replace("plugins/editor/build/pages", "") + "server/".concat(req.query.file), "utf8");
           case 12:
-            _data2 = _context2.sent;
-            _context2.next = 18;
+            _data2 = _context3.sent;
+            _context3.next = 18;
             break;
           case 15:
-            _context2.prev = 15;
-            _context2.t0 = _context2["catch"](9);
+            _context3.prev = 15;
+            _context3.t0 = _context3["catch"](9);
             runtime.log("\x1b[31m", "file not found");
           case 18:
             file = req.query.file;
@@ -137,57 +156,20 @@ function main(key, Server, Content, Host, runtime) {
             })), h("style", null, "button{\n              background-color: #4CAF50;\n              border: none;\n              color: white;\n              padding: 15px 32px;\n              text-align: center;\n              text-decoration: none;\n              display: inline-block;\n              font-size: 16px;\n              margin: 4px 2px;\n              cursor: pointer;\n            }\n            textarea{\n                width: 100%;\n                height: 300px;\n                padding: 12px 20px;\n                box-sizing: border-box;\n                border: 2px solid #ccc;\n                border-radius: 4px;\n                background-color: #f8f8f8;\n                font-size: 16px;\n                resize: none;\n            }\n            body{\n                font-family: Arial, Helvetica, sans-serif;\n                background-color: #f1f1f1;\n            }\n            a{\n                text-decoration: none;\n                color: #4CAF50;\n            }\n            li{\n                \n            }\n            h1 {\n            \n                font-size: 2.5em;\n                margin: 0.67em 0;\n                font: 'Times New Roman', Times, serif;\n            }\n            #fileName {\n                height: 20px;\n                width: 200px;\n            }\n"));
             _html.contents(r(_data2));
             _html.send(req, res);
-            return _context2.abrupt("return", {
+            return _context3.abrupt("return", {
               failSafe: true
             });
           case 23:
           case "end":
-            return _context2.stop();
-        }
-      }, _callee2, null, [[9, 15]]);
-    }));
-    return function (_x3, _x4) {
-      return _ref2.apply(this, arguments);
-    };
-  }());
-  Server.create("get", "/editor/pages/".concat(key, "/edit/api/modify"), /*#__PURE__*/function () {
-    var _ref3 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(req, res) {
-      return _regeneratorRuntime().wrap(function _callee3$(_context3) {
-        while (1) switch (_context3.prev = _context3.next) {
-          case 0:
-            if (enabled) {
-              _context3.next = 2;
-              break;
-            }
-            return _context3.abrupt("return", {
-              failSafe: true
-            });
-          case 2:
-            _context3.prev = 2;
-            _context3.next = 5;
-            return fs.promises.writeFile(__dirname.replace("plugins/editor/build/pages", "") + "server/".concat(req.query.file), req.query.data);
-          case 5:
-            _context3.next = 10;
-            break;
-          case 7:
-            _context3.prev = 7;
-            _context3.t0 = _context3["catch"](2);
-            console.log(_context3.t0);
-          case 10:
-            return _context3.abrupt("return", {
-              failSafe: true
-            });
-          case 11:
-          case "end":
             return _context3.stop();
         }
-      }, _callee3, null, [[2, 7]]);
+      }, _callee3, null, [[9, 15]]);
     }));
     return function (_x5, _x6) {
       return _ref3.apply(this, arguments);
     };
   }());
-  Server.create("get", "/editor/pages/".concat(key, "/edit/api/new"), /*#__PURE__*/function () {
+  Server.create("get", "/editor/pages/".concat(key, "/edit/api/modify"), /*#__PURE__*/function () {
     var _ref4 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4(req, res) {
       return _regeneratorRuntime().wrap(function _callee4$(_context4) {
         while (1) switch (_context4.prev = _context4.next) {
@@ -202,15 +184,15 @@ function main(key, Server, Content, Host, runtime) {
           case 2:
             _context4.prev = 2;
             _context4.next = 5;
-            return fs.promises.writeFile(__dirname.replace("plugins/editor/build/pages", "") + "server/".concat(req.query.file), "");
+            return fs.promises.writeFile(__dirname.replace("plugins/editor/build/pages", "") + "server/".concat(req.query.file), req.query.data);
           case 5:
-            _context4.next = 9;
+            _context4.next = 10;
             break;
           case 7:
             _context4.prev = 7;
             _context4.t0 = _context4["catch"](2);
-          case 9:
-            res.send("done");
+            console.log(_context4.t0);
+          case 10:
             return _context4.abrupt("return", {
               failSafe: true
             });
@@ -224,23 +206,60 @@ function main(key, Server, Content, Host, runtime) {
       return _ref4.apply(this, arguments);
     };
   }());
-  Server.create("get", "/editor/pages/".concat(key, "/edit/api/end"), /*#__PURE__*/function () {
+  Server.create("get", "/editor/pages/".concat(key, "/edit/api/new"), /*#__PURE__*/function () {
     var _ref5 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee5(req, res) {
       return _regeneratorRuntime().wrap(function _callee5$(_context5) {
         while (1) switch (_context5.prev = _context5.next) {
           case 0:
-            enabled = false;
+            if (enabled) {
+              _context5.next = 2;
+              break;
+            }
             return _context5.abrupt("return", {
+              failSafe: true
+            });
+          case 2:
+            _context5.prev = 2;
+            _context5.next = 5;
+            return fs.promises.writeFile(__dirname.replace("plugins/editor/build/pages", "") + "server/".concat(req.query.file), "");
+          case 5:
+            _context5.next = 9;
+            break;
+          case 7:
+            _context5.prev = 7;
+            _context5.t0 = _context5["catch"](2);
+          case 9:
+            res.send("done");
+            return _context5.abrupt("return", {
+              failSafe: true
+            });
+          case 11:
+          case "end":
+            return _context5.stop();
+        }
+      }, _callee5, null, [[2, 7]]);
+    }));
+    return function (_x9, _x10) {
+      return _ref5.apply(this, arguments);
+    };
+  }());
+  Server.create("get", "/editor/pages/".concat(key, "/edit/api/end"), /*#__PURE__*/function () {
+    var _ref6 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee6(req, res) {
+      return _regeneratorRuntime().wrap(function _callee6$(_context6) {
+        while (1) switch (_context6.prev = _context6.next) {
+          case 0:
+            enabled = false;
+            return _context6.abrupt("return", {
               failSafe: false
             });
           case 2:
           case "end":
-            return _context5.stop();
+            return _context6.stop();
         }
-      }, _callee5);
+      }, _callee6);
     }));
-    return function (_x9, _x10) {
-      return _ref5.apply(this, arguments);
+    return function (_x11, _x12) {
+      return _ref6.apply(this, arguments);
     };
   }());
 }
