@@ -48,7 +48,7 @@ function main(Server, Content, Host, runtime) {
   }
   function _runner() {
     _runner = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
-      var host;
+      var host, notFound;
       return _regeneratorRuntime().wrap(function _callee2$(_context2) {
         while (1) switch (_context2.prev = _context2.next) {
           case 0:
@@ -62,7 +62,9 @@ function main(Server, Content, Host, runtime) {
           case 6:
             //sleeps for 0.25 seconds.
             runtime.log("Press (CTRL + Q) to pause. Or press (CTRL + E) to end.", "");
-          case 7:
+            notFound = h("html", null, " ", h("h1", null, "404 - page not found")); //setInterval(function(){Server.notFound(r(notFound))},2000)
+            //You only need a runner in app.jsx!
+          case 8:
           case "end":
             return _context2.stop();
         }

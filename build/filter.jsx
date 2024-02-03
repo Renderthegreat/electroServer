@@ -80,7 +80,7 @@ function _rss() {
             html: r(_result)
           });
         case 10:
-          next();
+          next(); //continues with the request.
         case 11:
         case "end":
           return _context3.stop();

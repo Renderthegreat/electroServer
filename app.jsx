@@ -39,6 +39,9 @@ function main(Server, Content, Host, runtime) {
     await Server.start(80);//starts the server.
     await runtime.sleep(250);//sleeps for 0.25 seconds.
     runtime.log("Press (CTRL + Q) to pause. Or press (CTRL + E) to end.", "");
+    let notFound = <html> <h1>404 - page not found</h1></html>
+    //setInterval(function(){Server.notFound(r(notFound))},2000)
+    
     //You only need a runner in app.jsx!
   }
   runner();

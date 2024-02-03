@@ -6,9 +6,10 @@
  * You are required to keep this header intact.
  * You are permitted to use this code.
  */
-const fileLogging = false //set to true in production
-const imports = {app:'./app.jsx'};
-const plugins = {example:'plugins/example/'};
+const fileLogging = false; //set to true in production
+const imports = { app: "./app.jsx" };
+let plugins = {};
+plugins.autoInstall = true;
 /*
  ██████╗██╗      ██████╗ ██╗   ██╗██████╗       ██╗      █████╗ ██████╗ ███████╗
 ██╔════╝██║     ██╔═══██╗██║   ██║██╔══██╗██╗██╗██║     ██╔══██╗██╔══██╗██╔════╝
@@ -17,7 +18,7 @@ const plugins = {example:'plugins/example/'};
 ╚██████╗███████╗╚██████╔╝╚██████╔╝██████╔╝╚═╝╚═╝███████╗██║  ██║██████╔╝███████║
  ╚═════╝╚══════╝ ╚═════╝  ╚═════╝ ╚═════╝       ╚══════╝╚═╝  ╚═╝╚═════╝ ╚══════╝
 */
-console.log(' ⚡️  [buildingBlocks] Starting up...');
+console.log(" ⚡️  [buildingBlocks] Starting up...");
 buildingBlocks();
 
 console.time("║uptime");
@@ -80,29 +81,28 @@ let complete = false;
 let frozen = false;
 let permafreeze = false;
 let readlineDealloc = require("readline");
-const readline = {}
-readline.emitKeypressEvents = readlineDealloc.emitKeypressEvents
+const readline = {};
+readline.emitKeypressEvents = readlineDealloc.emitKeypressEvents;
 readlineDealloc = null;
 
 let pathDealloc = require("path");
-const path = {join:pathDealloc.join}
+const path = { join: pathDealloc.join };
 pathDealloc = null;
 const mime = require("mime-types");
 const express = require("express");
 const build = {};
 const pegio = ["app.pegio"];
 let pegioData = {};
-let updateTimeout = 100
-async function fileLog(file, data){
-  if(fileLogging){
-    logs = await fs.promises.readFile(file, 'utf8');
-    logs = logs + '\n' + data;
+let updateTimeout = 100;
+async function fileLog(file, data) {
+  if (fileLogging) {
+    logs = await fs.promises.readFile(file, "utf8");
+    logs = logs + "\n" + data;
     await fs.promises.writeFile(file, logs);
   }
 }
 console.log("╔╝");
 console.log("╠═\x1b[38;5;197m[starting]...\x1b[37m");
-
 
 async function buildingBlocks() {
   const builder = require("./builderman.js");
@@ -119,37 +119,71 @@ async function buildingBlocks() {
         Object.keys(imports).length
       } \x1b[38;5;10mImported and compiled:	\x1b[38;5;38m'${impo}'\x1b[37m =>`,
     );
-    
   }
   i = 0;
-  for (item in plugins){
-    i++;
-    let plugin = plugins[item];
-    const files = fs.readdirSync(plugin);
-    const pluginObject = fs.readFileSync(plugin + 'plugin.json', 'utf8');
-    const pluginData = JSON.parse(pluginObject);
-    const pluginName = pluginData.strictName;
-    const pluginEnabled = pluginData.enabled;
-    const pluginLooseName = pluginData.name;
-    const pluginSubfiles = pluginData.subfiles;
-    let i2 = 0;
-    const allFiles = Object.assign(files, pluginSubfiles);
-    if (pluginEnabled){
-      for(file in allFiles){
-        if(!allFiles[file].includes("plugin.json")&&allFiles[file].includes(".jsx")){
-          builder.compile(plugin + allFiles[file], `plugins/${pluginName}/build/${allFiles[file]}`);
-          i2++
-          
-        }
-      }
-      console.log(
-            `║ \x1b[38;5;209m${i} \x1b[38;5;6mof \x1b[38;5;209m${
-            Object.keys(plugins).length
-            } \x1b[38;5;10mPlugins imported and compiled:	\x1b[38;5;38m'${pluginLooseName}'\x1b[37m =>`,
+  fs.readdirSync("./plugins").forEach(async (plugin) => {
+    let jsonData = await fs.readFileSync(
+      `plugins/${plugin}/plugin.json`,
+      "utf8",
+    );
+    jsonData = await JSON.parse(jsonData);
+    if (!jsonData.enabled) {
+      fs.writeFileSync(
+        `plugins/${plugin}/build/plugin.jsx`,
+        `function main(Server, Content, Host, runtime) {} \n module.exports.main = main`,
       );
     }
-    
+  });
+  async function first() {
+    if (plugins.autoInstall) {
+      delete plugins.autoInstall;
+      await fs.readdirSync("plugins").forEach(async (plugin) => {
+        let jsonData = await fs.readFileSync(
+          `plugins/${plugin}/plugin.json`,
+          "utf8",
+        );
+        jsonData = await JSON.parse(jsonData);
+
+        if (jsonData.enabled) {
+          plugins[jsonData.strictName] = `plugins/${plugin}/`;
+        }
+      });
+    }
   }
+  first().then(async () => {
+    for (item in plugins) {
+      i++;
+      let plugin = plugins[item];
+      const files = fs.readdirSync(plugin);
+      const pluginObject = fs.readFileSync(plugin + "plugin.json", "utf8");
+      const pluginData = JSON.parse(pluginObject);
+      const pluginName = pluginData.strictName;
+      const pluginEnabled = pluginData.enabled;
+      const pluginLooseName = pluginData.name;
+      const pluginSubfiles = pluginData.subfiles;
+      let i2 = 0;
+      const allFiles = Object.assign(files, pluginSubfiles);
+      if (pluginEnabled) {
+        for (file in allFiles) {
+          if (
+            !allFiles[file].includes("plugin.json") &&
+            allFiles[file].includes(".jsx")
+          ) {
+            builder.compile(
+              plugin + allFiles[file],
+              `plugins/${pluginName}/build/${allFiles[file]}`,
+            );
+            i2++;
+          }
+        }
+        console.log(
+          `║ \x1b[38;5;209m${i} \x1b[38;5;6mof \x1b[38;5;209m${
+            Object.keys(plugins).length
+          } \x1b[38;5;10mPlugins imported and compiled:	\x1b[38;5;38m'${pluginLooseName}'\x1b[37m =>`,
+        );
+      }
+    }
+  });
   for (peg in pegio) {
     let data = await fs.promises.readFile(pegio[peg], "utf8");
     pegioData[peg] = data;
@@ -163,7 +197,9 @@ async function buildingBlocks() {
       this.name = name;
     }
     async main() {
-      console.log("╚═╗[Cloud::Labs Server Function] {(Press CTRL + C) to quit}");
+      console.log(
+        "╚═╗[Cloud::Labs Server Function] {(Press CTRL + C) to quit}",
+      );
       await runtime.run();
       await catcherComplete("end1").then(() => this.end());
     }
@@ -179,20 +215,30 @@ async function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 async function waitForCompletion() {
-    return new Promise(resolve => {
-        const interval = setInterval(() => {
-            if (complete) {
-                clearInterval(interval);
-                resolve();
-            }
-        }, 1000); 
-    });
+  return new Promise((resolve) => {
+    const interval = setInterval(() => {
+      if (complete) {
+        clearInterval(interval);
+        resolve();
+      }
+    }, 1000);
+  });
 }
 readline.emitKeypressEvents(process.stdin);
 process.stdin.setRawMode(true);
 
 async function detectAsyncExe() {
-  return [true];
+  let resd = new Promise((resolve, reject) => {
+    resolve(false);
+  });
+  resd.then((value) => {
+    if (resd) {
+      return true;
+    } else {
+      throw new Error("You must use await to start the server");
+      return false;
+    }
+  });
 }
 async function catcherComplete(pro) {
   return new Promise((resolve, reject) => {
@@ -217,7 +263,7 @@ class Host {
     } else {
       asDirPath = "";
     }
-    
+
     //dirPath = dirPath.replace(asDir, '');
     const files = fs.readdirSync(dir);
     files.forEach((file) => {
@@ -247,7 +293,7 @@ class Host {
           html.send(req, res);
           return { failSafe: true };
         };
-        myServer.create(type, `${dirPath}/${file}`, hfile);
+        myServer.create(type, `${asDirPath}/${file}`, hfile);
       } else if (file.endsWith(".css")) {
         const hfile = async (req, res) => {
           let html = new Content("text/css");
@@ -307,7 +353,7 @@ class ServerRuntime {
     this.Function = async () => {};
   }
   async run() {
-    this.Function();
+    await this.Function();
   }
   async sleep(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
@@ -336,6 +382,11 @@ class Server {
         console.log("\x1b[37m  ║║╠═\x1b[38;5;214mNew request.");
       }
       result = await func(req, res);
+      try {
+        result.failSafe = result.failSafe;
+      } catch (err) {
+        throw "║║═x FailSafe was not created";
+      }
       if (result.failSafe) {
         try {
           res.send(
@@ -344,7 +395,11 @@ class Server {
           console.log("\x1b[37m  ║║╠═\x1b[31mRequest incomplete.");
         } catch (e) {}
       }
-      console.log(`\x1b[37m  ║║╠═\x1b[38;5;10mRequest complete: ${req.method} ${req.url} `);
+      console.log(
+        `\x1b[37m  ║║╠═\x1b[38;5;10mRequest complete: ${
+          req.method
+        } ${req.url.split(32)} `,
+      );
       fileLog("server.log", `New request: ${req.method} ${req.url} ${req.ip}`);
     });
   }
@@ -353,7 +408,7 @@ class Server {
     let index = this.paths.indexOf(path);
     if (index > -1) {
       this.paths.splice(index, 1);
-      console.log(apps[this.name]._router.stack);
+      //console.log(apps[this.name]._router.stack);
       apps[this.name]._router.stack.splice(index + 4, 1);
     } else {
       console.log(
@@ -362,17 +417,14 @@ class Server {
     }
   }
   async start(port) {
-    if (await detectAsyncExe()) {
-      console.log("  ╠╦═\x1b[36m[Server Function] \x1b[0m");
-      apps[this.name].listen(port, () => {
-        console.log(
-          `\x1b[37m  ║╠╦═\x1b[38;5;13m[Running on port: ${port}]\n  \x1b[37m║║╠═\x1b[38;5;6mServer running...`,
-        );
-      });
-      apps[this.name].use(this.status);
-    } else {
-      console.log("\x1b[37m  ║║╠═\x1b[38;5;10mUse await to start the server.");
-    }
+    console.log("  ╠╦═\x1b[36m[Server Function] \x1b[0m");
+    apps[this.name].listen(port, () => {
+      console.log(
+        `\x1b[37m  ║╠╦═\x1b[38;5;13m[Running on port: ${port}]\n  \x1b[37m║║╠═\x1b[38;5;6mServer running...`,
+      );
+    });
+    apps[this.name].use(this.status);
+
     process.stdin.on("keypress", (str, key) => {
       if (key.ctrl && key.name === "q" && this.active) {
         permafreeze = !permafreeze;
@@ -384,9 +436,7 @@ class Server {
     });
     process.stdin.on("keypress", (str, key) => {
       if (key.ctrl && key.name === "d" && this.active) {
-        console.log(process.memoryUsage())
-
-        
+        console.log(process.memoryUsage());
       } else {
       }
     });
@@ -416,7 +466,7 @@ class Server {
       res.send("The app is frozen. Please try again later.");
     } else {
       let html = await build.filter.rss(req, res, next);
-      
+
       if (html) {
         let newHtml = new Content("text/html");
         newHtml.contents(html.html);
@@ -440,6 +490,16 @@ class Server {
       this.unpause();
     }
   }
+  notFound(content) {
+    apps[this.name].all("*", async (req, res) => {
+      res.status(404).send(content);
+    });
+  }
+  to(type, path, content) {
+    return `fetch(location.origin + "/${path}/",  ${type}, ${{
+      body: content,
+    }})`;
+  }
   end() {
     apps[this.name].listen(this.port).close();
     console.log("\x1b[37m  ╠╩╩═\x1b[32;5;214mServer closed.");
@@ -459,14 +519,28 @@ class Server {
 }
 
 //APP
-let myServer = new Server(async (req, res) => {}, "myServer");
+const myServer = new Server(async (req, res) => {}, "myServer");
 const runtime = new ServerRuntime(apps["myServer"], myServer);
+
 runtime.Function = async () => {
-  const loadPegio = eval(pegioData[0])//loads the pegio file
-  include('./build/app.jsx',myServer,Content,Host,runtime) //loads the app
-  include('./plugins/example/build/plugin.jsx',myServer,Content,Host,runtime)//loads the plugin example
+  const loadPegio = eval(pegioData[0]); //loads the pegio file
+  include("./build/app.jsx", myServer, Content, Host, runtime); //loads the app
+  include(
+    "./plugins/example/build/plugin.jsx",
+    myServer,
+    Content,
+    Host,
+    runtime,
+  ); //loads the plugin example
+  include(
+    "./plugins/editor/build/plugin.jsx",
+    myServer,
+    Content,
+    Host,
+    runtime,
+  ); //loads the editor plugin
+  include("./plugins/help/build/plugin.jsx", myServer, Content, Host, runtime);
   await waitForCompletion();
   myServer.end();
   catcher.push("end1");
 };
-

@@ -117,8 +117,8 @@ For more information and updates, visit the Renderlabs::Cloud website or refer t
 
 ### Appendix:
 
-- **GitHub Repository Link:** [https://github.com/Renderthegreat/Nexus.Server.js]
-- **Renderlabs::Cloud Website:** [https://renderlabs.cloud]
+- **GitHub Repository Link:** [Github](https://github.com/Renderthegreat/Nexus.Server.js)
+- **Renderlabs::Cloud Website:** [Renderlabs.cloud](https://renderlabs.cloud)
 
 ---
 

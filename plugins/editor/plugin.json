@@ -1,0 +1,7 @@
+{
+	"enabled": false,
+  "check readme.md!!!":"or else...",
+	"name": "Editor Plugin",
+	"strictName": "editor",
+	"subfiles": {"pages/editor":"./pages/editor.jsx"}
+}

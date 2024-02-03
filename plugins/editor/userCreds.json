@@ -1,0 +1,8 @@
+{
+	"users":{
+		"john":{
+			"password":"doe",
+			"username":"john"
+		}
+	}
+}
