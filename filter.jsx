@@ -31,4 +31,4 @@ async function rss(req, res, next){
   }
 } 
 setup()
-module.exports.rss = rss
+export { rss }

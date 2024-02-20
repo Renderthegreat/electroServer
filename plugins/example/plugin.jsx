@@ -34,4 +34,4 @@ function main(Server, Content, Host, runtime) {
     return { failSafe: true }; //tells the server to return a message if none is returned.
   });
 }
-module.exports.main = main;
+export { main }

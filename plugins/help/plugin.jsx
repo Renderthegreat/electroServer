@@ -64,4 +64,4 @@ function main(Server, Content, Host, runtime) {
     return { failSafe: true };
   });
 }
-module.exports.main = main;
+export { main }

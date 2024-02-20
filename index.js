@@ -7,6 +7,8 @@
  * You are permitted to use this code.
  */
 
+
+
 //CONFIGURATION
 const throwErrorOnNoFailSafe = true;
 const fileLogging = false; //Logs Requests
@@ -22,6 +24,8 @@ plugins.autoInstall = true;
 ╚██████╗███████╗╚██████╔╝╚██████╔╝██████╔╝╚═╝╚═╝███████╗██║  ██║██████╔╝███████║
  ╚═════╝╚══════╝ ╚═════╝  ╚═════╝ ╚═════╝       ╚══════╝╚═╝  ╚═╝╚═════╝ ╚══════╝
 */
+
+
 console.log(" 🤖  [buildingBlocks] Starting up...");
 console.time("║uptime");
 const fs = require("fs");
@@ -57,7 +61,7 @@ async function buildingBlocks() {
   await builder.compile("filter.jsx", "build/filter.jsx");
   await sleep(updateTimeout);
 
-  build.filter = await require("./build/filter.jsx");
+  build.filter = require("./build/filter.jsx");
   let i = 0;
   for (impo in imports) {
     i++;
@@ -70,7 +74,7 @@ async function buildingBlocks() {
   }
   i = 0;
   fs.readdirSync("./plugins").forEach(async (plugin) => {
-    let jsonData = await fs.readFileSync(
+    let jsonData = fs.readFileSync(
       `plugins/${plugin}/plugin.json`,
       "utf8",
     );
@@ -85,8 +89,8 @@ async function buildingBlocks() {
   async function first() {
     if (plugins.autoInstall) {
       delete plugins.autoInstall;
-      await fs.readdirSync("plugins").forEach(async (plugin) => {
-        let jsonData = await fs.readFileSync(
+      fs.readdirSync("plugins").forEach(async (plugin) => {
+        let jsonData = fs.readFileSync(
           `plugins/${plugin}/plugin.json`,
           "utf8",
         );
