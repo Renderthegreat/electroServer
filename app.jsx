@@ -30,7 +30,7 @@ function main(Server, Content, Host, runtime) {
 
     html.contents(r(data));//sets the html to the data.
     html.send(req, res);//sends the html to the client.
-    return { failSafe: true }; //tells the server to return a message if none is returned.
+    return { failsafe:true }; //tells the server to return a message if none is returned.
   });
   async function runner() {
     let host = new Host();//creates a new host.

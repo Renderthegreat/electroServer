@@ -28,11 +28,9 @@ function main(Server, Content, Host, runtime) {
             }
             data = h("html", null, h("body", null, h("div", null, h("h1", null, "This example page has ", clicks, " view", pluralMarker, ".")), h("style", null, styles)));
             html.contents(r(data)); //sets the html to the data.
-            html.send(req, res); //sends the html to the client.
-            return _context.abrupt("return", {
-              failSafe: true
-            });
-          case 7:
+            //html.send(req, res);//sends the html to the client.
+            return _context.abrupt("return", {});
+          case 6:
           case "end":
             return _context.stop();
         }

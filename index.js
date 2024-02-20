@@ -7,11 +7,9 @@
  * You are permitted to use this code.
  */
 
-
-
 //CONFIGURATION
-
-const fileLogging = false; //set to true in production
+const throwErrorOnNoFailSafe = true;
+const fileLogging = false; //Logs Requests
 const imports = { app: "./app.jsx" };
 let plugins = {};
 plugins.autoInstall = true;
@@ -33,8 +31,9 @@ let result;
 let complete = false;
 let frozen = false;
 let permafreeze = false;
-var run = "<pending>"
-const readline = { emitKeypressEvents : require("readline").emitKeypressEvents }
+var run = "<pending>";
+var SSR = "<pending>";
+const readline = { emitKeypressEvents: require("readline").emitKeypressEvents };
 const path = { join: require("path").join };
 const mime = require("mime-types");
 const express = require("express");
@@ -54,7 +53,6 @@ console.log("╔╝");
 console.log("╠═\x1b[38;5;197m[starting]...\x1b[37m");
 buildingBlocks();
 async function buildingBlocks() {
-
   const builder = require("./builderman.js");
   await builder.compile("filter.jsx", "build/filter.jsx");
   await sleep(updateTimeout);
@@ -85,7 +83,7 @@ async function buildingBlocks() {
     }
   });
   async function first() {
-    if (plugins.autoInstall) {   
+    if (plugins.autoInstall) {
       delete plugins.autoInstall;
       await fs.readdirSync("plugins").forEach(async (plugin) => {
         let jsonData = await fs.readFileSync(
@@ -214,18 +212,27 @@ class Host {
     } else {
       asDirPath = "";
     }
-    let plusDir = [(dirPath.split("/")[2]||undefined),(dirPath.split("/")[3]||undefined),(dirPath.split("/")[4]||undefined),(dirPath.split("/")[5]||undefined),(dirPath.split("/")[6]?"...":undefined)]
-    for (let sub in plusDir){
-      if(typeof plusDir[sub] !== "undefined"){
-        plusDir[sub] = plusDir[sub] + "/"
-      }
-      else{
-        plusDir[sub] = ""
+    let plusDir = [
+      dirPath.split("/")[2] || undefined,
+      dirPath.split("/")[3] || undefined,
+      dirPath.split("/")[4] || undefined,
+      dirPath.split("/")[5] || undefined,
+      dirPath.split("/")[6] ? "..." : undefined,
+    ];
+    for (let sub in plusDir) {
+      if (typeof plusDir[sub] !== "undefined") {
+        plusDir[sub] = plusDir[sub] + "/";
+      } else {
+        plusDir[sub] = "";
       }
     }
-    plusDir = plusDir||""
-    plusDir = plusDir.join("")
-    console.log(`  ╠═\x1b[38;5;209m[hosting]: \x1b[38;5;6m.${dirPath} \x1b[38;5;10m=> \x1b[38;5;38m${asDir+plusDir} \x1b[37m`)
+    plusDir = plusDir || "";
+    plusDir = plusDir.join("");
+    console.log(
+      `  ╠═\x1b[38;5;209m[hosting]: \x1b[38;5;6m.${dirPath} \x1b[38;5;10m=> \x1b[38;5;38m${
+        asDir + plusDir
+      } \x1b[37m`,
+    );
     //dirPath = dirPath.replace(asDir, '');
     const files = fs.readdirSync(dir);
     files.forEach((file) => {
@@ -238,7 +245,17 @@ class Host {
         const hfile = async (req, res) => {
           let html = new Content("text/html");
           let data = await fs.promises.readFile(filePath, "utf8");
-          html.contents(data);
+          const regex = /#{{\s*(.*?)\s*}}/g;
+          const replacedString = data.replace(regex, (match, p1) => {
+            const replacement = p1.trim();
+            if (SSR[replacement]) {
+              return SSR[replacement];
+            } else {
+              return match;
+            }
+          });
+          data = replacedString;
+          html.contents(replacedString);
           html.send(req, res);
           return { failSafe: true };
         };
@@ -249,19 +266,39 @@ class Host {
         }
       } else if (file.endsWith(".js")) {
         const hfile = async (req, res) => {
-          let html = new Content("text/javascript");
+          let js = new Content("text/javascript");
           let data = await fs.promises.readFile(filePath, "utf8");
-          html.contents(data);
-          html.send(req, res);
+          const regex = /#{{\s*(.*?)\s*}}/g;
+          const replacedString = data.replace(regex, (match, p1) => {
+            const replacement = p1.trim();
+            if (SSR[replacement]) {
+              return SSR[replacement];
+            } else {
+              return match;
+            }
+          });
+          data = replacedString;
+          js.contents(data);
+          js.send(req, res);
           return { failSafe: true };
         };
         run.create(type, `${asDirPath}/${file}`, hfile);
       } else if (file.endsWith(".css")) {
         const hfile = async (req, res) => {
-          let html = new Content("text/css");
+          let css = new Content("text/css");
           let data = await fs.promises.readFile(filePath, "utf8");
-          html.contents(data);
-          html.send(req, res);
+          const regex = /#{{\s*(.*?)\s*}}/g;
+          const replacedString = data.replace(regex, (match, p1) => {
+            const replacement = p1.trim();
+            if (SSR[replacement]) {
+              return SSR[replacement];
+            } else {
+              return match;
+            }
+          });
+          data = replacedString;
+          css.contents(data);
+          css.send(req, res);
           return { failSafe: true };
         };
         run.create(type, `${asDirPath}/${file}`, hfile);
@@ -269,7 +306,27 @@ class Host {
         let data;
         const hfile = async (req, res) => {
           let content = new Content(mime.lookup(file) || "text/plain");
-          let data = await fs.promises.readFile(filePath, "utf8");
+          let data = await fs.promises.readFile(filePath);
+          let nonBinData = await fs.promises.readFile(filePath, "utf8");
+
+          try {
+            const regex = /#{{\s*(.*?)\s*}}/g;
+            const replacedString = data.replace(regex, (match, p1) => {
+              const replacement = p1.trim();
+              if (SSR[replacement]) {
+                return SSR[replacement];
+              } else {
+                return match;
+              }
+            });
+            data = replacedString;
+          } catch (err) {
+            console.log(
+              "  ║║╠═\x1b[38;5;209m[hosting] \x1b[38;5;196mError: \x1b[38;5;6mFile data is invalid\x1b[37m",
+            );
+
+            data = nonBinData;
+          }
 
           //data may be binary fix later lol:O
           content.contents(data);
@@ -324,7 +381,18 @@ class ServerRuntime {
     console.log(`\x1b[37m  ║║╠═${color}${msg}`);
   }
 }
-
+class ssr {
+  constructor() {}
+  add(name, data) {
+    SSR[name] = data;
+  }
+  set(name, data) {
+    SSR[name] = data;
+  }
+  get(name) {
+    return SSR[name];
+  }
+}
 class Server {
   router = express.Router();
   constructor(func, name) {
@@ -337,18 +405,24 @@ class Server {
     apps[this.name] = require("express")();
   }
   create(type, path, func) {
+    let fails = false;
     apps[this.name].use(this.status);
     this.paths.push(path);
-    apps[this.name][type](path, async (req, res) => {
+    apps[this.name][type](path, (async (req, res) => {
       if (!permafreeze) {
-        console.log("\x1b[37m  ║║╠═\x1b[38;5;214mNew request.");
+        console.log("\x1b[37m  ║║╠═\x1b[38;5;214mNew request.\x1b[37m");
       }
       result = await func(req, res);
+
       try {
-        result.failSafe = result.failSafe;
+        if (result.failSafe !== undefined) {
+        } else {
+          throw "║║═\x1b[31mx \x1b[32mNo response data.";
+        }
       } catch (err) {
-        throw "║║═x FailSafe was not created";
+        fails = true;
       }
+
       if (result.failSafe) {
         try {
           res.send(
@@ -363,7 +437,11 @@ class Server {
         } ${req.url.split(32)} `,
       );
       fileLog("server.log", `New request: ${req.method} ${req.url} ${req.ip}`);
-    });
+      if (fails) {
+      throw ( "║║═\x1b[31mx \x1b[32mFailSafe was not created.");
+    }
+    }))
+    
   }
 
   remove(path) {
@@ -483,15 +561,12 @@ class Server {
 //APP
 const WebServer = new Server(async (req, res) => {}, "WebServer");
 const Runtime = new ServerRuntime(apps["WebServer"], WebServer);
-run = WebServer
+SSR = new ssr();
+SSR.add("hello", "Hello World!");
+run = WebServer;
 Runtime.Function = async () => {
   const loadPegio = eval(pegioData[0]); //loads the pegio file
-  include(
-    "./build/app.jsx", 
-    WebServer, 
-    Content, 
-    Host, 
-    Runtime); //loads the app
+  include("./build/app.jsx", WebServer, Content, Host, Runtime); //loads the app
   include(
     "./plugins/example/build/plugin.jsx",
     WebServer,
@@ -506,12 +581,7 @@ Runtime.Function = async () => {
     Host,
     Runtime,
   ); //loads the editor plugin
-  include("./plugins/help/build/plugin.jsx", 
-    WebServer, 
-    Content, 
-    Host, 
-    Runtime
-  );
+  include("./plugins/help/build/plugin.jsx", WebServer, Content, Host, Runtime);
   await waitForCompletion();
   WebServer.end();
   catcher.push("end1");
