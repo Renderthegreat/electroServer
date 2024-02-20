@@ -33,7 +33,7 @@ let result;
 let complete = false;
 let frozen = false;
 let permafreeze = false;
-
+var run = "<pending>"
 const readline = { emitKeypressEvents : require("readline").emitKeypressEvents }
 const path = { join: require("path").join };
 const mime = require("mime-types");
@@ -142,7 +142,7 @@ async function buildingBlocks() {
 
   //SERVER PROCESS HERE!!!
   //Create your own server here! (if you understand it of course)
-  class myServerProcess {
+  class WebServerProcess {
     constructor(name) {
       this.name = name;
     }
@@ -151,7 +151,7 @@ async function buildingBlocks() {
       console.log(
         "╚═╗[Cloud::Labs Server Function] {(Press CTRL + C) to quit}",
       );
-      await runtime.run();
+      await Runtime.run();
       await catcherComplete("end1").then(() => this.end());
     }
     end() {
@@ -159,8 +159,8 @@ async function buildingBlocks() {
       process.exit(0);
     }
   }
-  const myProcess = new Process(new myServerProcess("myServer"));
-  myProcess.start();
+  const mainProcess = new Process(new WebServerProcess("myServer"));
+  mainProcess.start();
 }
 async function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -214,7 +214,18 @@ class Host {
     } else {
       asDirPath = "";
     }
-
+    let plusDir = [(dirPath.split("/")[2]||undefined),(dirPath.split("/")[3]||undefined),(dirPath.split("/")[4]||undefined),(dirPath.split("/")[5]||undefined),(dirPath.split("/")[6]?"...":undefined)]
+    for (let sub in plusDir){
+      if(typeof plusDir[sub] !== "undefined"){
+        plusDir[sub] = plusDir[sub] + "/"
+      }
+      else{
+        plusDir[sub] = ""
+      }
+    }
+    plusDir = plusDir||""
+    plusDir = plusDir.join("")
+    console.log(`  ╠═\x1b[38;5;209m[hosting]: \x1b[38;5;6m.${dirPath} \x1b[38;5;10m=> \x1b[38;5;38m${asDir+plusDir} \x1b[37m`)
     //dirPath = dirPath.replace(asDir, '');
     const files = fs.readdirSync(dir);
     files.forEach((file) => {
@@ -232,9 +243,9 @@ class Host {
           return { failSafe: true };
         };
 
-        myServer.create(type, `${asDirPath}/${file}`, hfile);
+        run.create(type, `${asDirPath}/${file}`, hfile);
         if (file === "index.html") {
-          myServer.create(type, `${asDirPath}/`, hfile);
+          run.create(type, `${asDirPath}/`, hfile);
         }
       } else if (file.endsWith(".js")) {
         const hfile = async (req, res) => {
@@ -244,7 +255,7 @@ class Host {
           html.send(req, res);
           return { failSafe: true };
         };
-        myServer.create(type, `${asDirPath}/${file}`, hfile);
+        run.create(type, `${asDirPath}/${file}`, hfile);
       } else if (file.endsWith(".css")) {
         const hfile = async (req, res) => {
           let html = new Content("text/css");
@@ -253,7 +264,7 @@ class Host {
           html.send(req, res);
           return { failSafe: true };
         };
-        myServer.create(type, `${asDirPath}/${file}`, hfile);
+        run.create(type, `${asDirPath}/${file}`, hfile);
       } else {
         let data;
         const hfile = async (req, res) => {
@@ -266,7 +277,7 @@ class Host {
           return { failSafe: true };
         };
 
-        myServer.create(type, `${asDirPath}/${file}`, hfile);
+        run.create(type, `${asDirPath}/${file}`, hfile);
       }
     });
   }
@@ -470,33 +481,38 @@ class Server {
 }
 
 //APP
-const myServer = new Server(async (req, res) => {}, "myServer");
-const runtime = new ServerRuntime(apps["myServer"], myServer);
-
-runtime.Function = async () => {
+const WebServer = new Server(async (req, res) => {}, "WebServer");
+const Runtime = new ServerRuntime(apps["WebServer"], WebServer);
+run = WebServer
+Runtime.Function = async () => {
   const loadPegio = eval(pegioData[0]); //loads the pegio file
-  include("./build/app.jsx", myServer, Content, Host, runtime); //loads the app
+  include(
+    "./build/app.jsx", 
+    WebServer, 
+    Content, 
+    Host, 
+    Runtime); //loads the app
   include(
     "./plugins/example/build/plugin.jsx",
-    myServer,
+    WebServer,
     Content,
     Host,
-    runtime,
+    Runtime,
   ); //loads the plugin example
   include(
     "./plugins/editor/build/plugin.jsx",
-    myServer,
+    WebServer,
     Content,
     Host,
-    runtime,
+    Runtime,
   ); //loads the editor plugin
   include("./plugins/help/build/plugin.jsx", 
-    myServer, 
+    WebServer, 
     Content, 
     Host, 
-    runtime
+    Runtime
   );
   await waitForCompletion();
-  myServer.end();
+  WebServer.end();
   catcher.push("end1");
 };

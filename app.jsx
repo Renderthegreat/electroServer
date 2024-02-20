@@ -1,4 +1,3 @@
-// dont worry you can pet my js its really friendly.
 const { h } = require("preact"); //very important.
 const { render } = require("preact-render-to-string"); //also very important.
 const r = render; //optional.
