@@ -6,10 +6,16 @@
  * You are required to keep this header intact.
  * You are permitted to use this code.
  */
+
+
+
+//CONFIGURATION
+
 const fileLogging = false; //set to true in production
 const imports = { app: "./app.jsx" };
 let plugins = {};
 plugins.autoInstall = true;
+
 /*
  ██████╗██╗      ██████╗ ██╗   ██╗██████╗       ██╗      █████╗ ██████╗ ███████╗
 ██╔════╝██║     ██╔═══██╗██║   ██║██╔══██╗██╗██╗██║     ██╔══██╗██╔══██╗██╔════╝
@@ -18,76 +24,18 @@ plugins.autoInstall = true;
 ╚██████╗███████╗╚██████╔╝╚██████╔╝██████╔╝╚═╝╚═╝███████╗██║  ██║██████╔╝███████║
  ╚═════╝╚══════╝ ╚═════╝  ╚═════╝ ╚═════╝       ╚══════╝╚═╝  ╚═╝╚═════╝ ╚══════╝
 */
-console.log(" ⚡️  [buildingBlocks] Starting up...");
-buildingBlocks();
-
+console.log(" 🤖  [buildingBlocks] Starting up...");
 console.time("║uptime");
 const fs = require("fs");
-//work in process
-/*let alloc = '';
-let allocIndexes = {};
-async function clear(){
-  await fs.promises.writeFile('alloc.turntable', '');
-}
-
-async function alloced(name, startIndex, endIndex, value) {
-  let data = await fs.promises.readFile('alloc.turntable', 'utf8');
-  alloc = data;
-  allocIndexes[name] = { startIndex, endIndex };
-  alloc = alloc.slice(0, startIndex) + value + alloc.slice(endIndex);
-
-  await fs.promises.writeFile('alloc.turntable', alloc);
-}
-
-async function dealloced(name, startIndex, endIndex) {
-  delete allocIndexes[name];
-  let open = await fs.promises.readFile('alloc.turntable', 'utf8');
-  let data = open
-  let porti = data.slice(startIndex, endIndex);
-  console.log('porti: ' + porti);
-  
-  data = data.slice(0, startIndex) + data.slice(endIndex,data.length); 
-  for (let index in allocIndexes) {
-    if (allocIndexes[index].startIndex > endIndex) {
-      allocIndexes[index].startIndex -= (endIndex - startIndex);
-    }
-    if (allocIndexes[index].endIndex > endIndex) {
-      allocIndexes[index].endIndex -= (endIndex - startIndex);
-    }
-  }
-  porti = open.replace(data,'')
-  console.log('data after removal: ' + porti);
-  await fs.promises.writeFile('alloc.turntable', data);
-  return porti;
-}
-
-
-
-async function tester(){
-  alloced('test', 0, 11, 'hello world');
-  alloced('test2', 12, 14, '..');
-  var test_dealloc = await (dealloced('test',0,11))
-  console.log('test '+test_dealloc)
-  var test_dealloc2 = await (dealloced('test',12,14))
-  console.log('test2 '+test_dealloc2)
-  
-}
-//tester()
-*/
 const apps = {};
 let catcher = [];
 let result;
 let complete = false;
 let frozen = false;
 let permafreeze = false;
-let readlineDealloc = require("readline");
-const readline = {};
-readline.emitKeypressEvents = readlineDealloc.emitKeypressEvents;
-readlineDealloc = null;
 
-let pathDealloc = require("path");
-const path = { join: pathDealloc.join };
-pathDealloc = null;
+const readline = { emitKeypressEvents : require("readline").emitKeypressEvents }
+const path = { join: require("path").join };
 const mime = require("mime-types");
 const express = require("express");
 const build = {};
@@ -101,10 +49,12 @@ async function fileLog(file, data) {
     await fs.promises.writeFile(file, logs);
   }
 }
+console.log(" 🏗️  [buildingBlocks] Building...");
 console.log("╔╝");
 console.log("╠═\x1b[38;5;197m[starting]...\x1b[37m");
-
+buildingBlocks();
 async function buildingBlocks() {
+
   const builder = require("./builderman.js");
   await builder.compile("filter.jsx", "build/filter.jsx");
   await sleep(updateTimeout);
@@ -135,7 +85,7 @@ async function buildingBlocks() {
     }
   });
   async function first() {
-    if (plugins.autoInstall) {
+    if (plugins.autoInstall) {   
       delete plugins.autoInstall;
       await fs.readdirSync("plugins").forEach(async (plugin) => {
         let jsonData = await fs.readFileSync(
@@ -197,6 +147,7 @@ async function buildingBlocks() {
       this.name = name;
     }
     async main() {
+      console.log("🌩️ [buildingBlocks] complete!");
       console.log(
         "╚═╗[Cloud::Labs Server Function] {(Press CTRL + C) to quit}",
       );
@@ -539,7 +490,12 @@ runtime.Function = async () => {
     Host,
     runtime,
   ); //loads the editor plugin
-  include("./plugins/help/build/plugin.jsx", myServer, Content, Host, runtime);
+  include("./plugins/help/build/plugin.jsx", 
+    myServer, 
+    Content, 
+    Host, 
+    runtime
+  );
   await waitForCompletion();
   myServer.end();
   catcher.push("end1");
