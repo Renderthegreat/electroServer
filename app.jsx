@@ -45,4 +45,4 @@ function main(Server, Content, Host, runtime) {
   }
   runner();
 }
-export {main} ;//exports the main function to be used later.
+export { main };

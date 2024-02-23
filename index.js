@@ -7,7 +7,7 @@
  * You are permitted to use this code.
  */
 
-
+"🐳"
 
 //CONFIGURATION
 const throwErrorOnNoFailSafe = true;
@@ -24,7 +24,6 @@ plugins.autoInstall = true;
 ╚██████╗███████╗╚██████╔╝╚██████╔╝██████╔╝╚═╝╚═╝███████╗██║  ██║██████╔╝███████║
  ╚═════╝╚══════╝ ╚═════╝  ╚═════╝ ╚═════╝       ╚══════╝╚═╝  ╚═╝╚═════╝ ╚══════╝
 */
-
 
 console.log(" 🤖  [buildingBlocks] Starting up...");
 console.time("║uptime");
@@ -55,7 +54,7 @@ async function fileLog(file, data) {
 console.log(" 🏗️  [buildingBlocks] Building...");
 console.log("╔╝");
 console.log("╠═\x1b[38;5;197m[starting]...\x1b[37m");
-buildingBlocks();
+void delete buildingBlocks();
 async function buildingBlocks() {
   const builder = require("./builderman.js");
   await builder.compile("filter.jsx", "build/filter.jsx");
@@ -74,10 +73,7 @@ async function buildingBlocks() {
   }
   i = 0;
   fs.readdirSync("./plugins").forEach(async (plugin) => {
-    let jsonData = fs.readFileSync(
-      `plugins/${plugin}/plugin.json`,
-      "utf8",
-    );
+    let jsonData = fs.readFileSync(`plugins/${plugin}/plugin.json`, "utf8");
     jsonData = await JSON.parse(jsonData);
     if (!jsonData.enabled) {
       fs.writeFileSync(
@@ -90,10 +86,7 @@ async function buildingBlocks() {
     if (plugins.autoInstall) {
       delete plugins.autoInstall;
       fs.readdirSync("plugins").forEach(async (plugin) => {
-        let jsonData = fs.readFileSync(
-          `plugins/${plugin}/plugin.json`,
-          "utf8",
-        );
+        let jsonData = fs.readFileSync(`plugins/${plugin}/plugin.json`, "utf8");
         jsonData = await JSON.parse(jsonData);
 
         if (jsonData.enabled) {
@@ -180,19 +173,6 @@ async function waitForCompletion() {
 readline.emitKeypressEvents(process.stdin);
 process.stdin.setRawMode(true);
 
-async function detectAsyncExe() {
-  let resd = new Promise((resolve, reject) => {
-    resolve(false);
-  });
-  resd.then((value) => {
-    if (resd) {
-      return true;
-    } else {
-      throw new Error("You must use await to start the server");
-      return false;
-    }
-  });
-}
 async function catcherComplete(pro) {
   return new Promise((resolve, reject) => {
     const interval = setInterval(() => {
@@ -412,7 +392,7 @@ class Server {
     let fails = false;
     apps[this.name].use(this.status);
     this.paths.push(path);
-    apps[this.name][type](path, (async (req, res) => {
+    apps[this.name][type](path, async (req, res) => {
       if (!permafreeze) {
         console.log("\x1b[37m  ║║╠═\x1b[38;5;214mNew request.\x1b[37m");
       }
@@ -442,10 +422,9 @@ class Server {
       );
       fileLog("server.log", `New request: ${req.method} ${req.url} ${req.ip}`);
       if (fails) {
-      throw ( "║║═\x1b[31mx \x1b[32mFailSafe was not created.");
-    }
-    }))
-    
+        //throw ( "║║═\x1b[31mx \x1b[32mFailSafe was not created.");
+      }
+    });
   }
 
   remove(path) {
@@ -569,22 +548,22 @@ SSR = new ssr();
 SSR.add("hello", "Hello World!");
 run = WebServer;
 Runtime.Function = async () => {
-  const loadPegio = eval(pegioData[0]); //loads the pegio file
-  include("./build/app.jsx", WebServer, Content, Host, Runtime); //loads the app
+  const loadPegio = eval(pegioData[0]);
+  include("./build/app.jsx", WebServer, Content, Host, Runtime);
   include(
     "./plugins/example/build/plugin.jsx",
     WebServer,
     Content,
     Host,
     Runtime,
-  ); //loads the plugin example
+  );
   include(
     "./plugins/editor/build/plugin.jsx",
     WebServer,
     Content,
     Host,
     Runtime,
-  ); //loads the editor plugin
+  );
   include("./plugins/help/build/plugin.jsx", WebServer, Content, Host, Runtime);
   await waitForCompletion();
   WebServer.end();
