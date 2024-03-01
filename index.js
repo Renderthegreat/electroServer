@@ -6,9 +6,12 @@
  * You are required to keep this header intact.
  * You are permitted to use this code.
  */
-
-"🐳"
-
+var globe = {
+  timers: {}
+}
+function debug(message) {
+  console.log("  ║║╠═$ debug point reached "+ message)
+}
 //CONFIGURATION
 const throwErrorOnNoFailSafe = true;
 const fileLogging = false; //Logs Requests
@@ -54,7 +57,7 @@ async function fileLog(file, data) {
 console.log(" 🏗️  [buildingBlocks] Building...");
 console.log("╔╝");
 console.log("╠═\x1b[38;5;197m[starting]...\x1b[37m");
-void delete buildingBlocks();
+buildingBlocks();
 async function buildingBlocks() {
   const builder = require("./builderman.js");
   await builder.compile("filter.jsx", "build/filter.jsx");
@@ -169,6 +172,21 @@ async function waitForCompletion() {
       }
     }, 1000);
   });
+}
+globe.time = async (name) => {
+  globe.timers[name] = performance.now().toFixed(3);
+}
+globe.timeEnd = async (name) => {
+  const startTime = globe.timers[name];
+  if (startTime) {
+    const endTime = performance.now();
+    const elapsedTime = endTime - startTime;
+    delete globe.timers[name];
+    return elapsedTime.toFixed(3);
+  } else {
+    console.log(`Request timer '${name}' not found.`);
+  }
+  
 }
 readline.emitKeypressEvents(process.stdin);
 process.stdin.setRawMode(true);
@@ -395,9 +413,14 @@ class Server {
     apps[this.name][type](path, async (req, res) => {
       if (!permafreeze) {
         console.log("\x1b[37m  ║║╠═\x1b[38;5;214mNew request.\x1b[37m");
+        
       }
+      
+      req.random = Math.random().toString().replace(".", "").toString()
+      globe.time(req.random)
+      //debug("request start")
       result = await func(req, res);
-
+      //debug("request end ")
       try {
         if (result.failSafe !== undefined) {
         } else {
@@ -418,7 +441,7 @@ class Server {
       console.log(
         `\x1b[37m  ║║╠═\x1b[38;5;10mRequest complete: ${
           req.method
-        } ${req.url.split(32)} `,
+        } ${req.url.split(32)} in ${await globe.timeEnd(req.random)}s`,
       );
       fileLog("server.log", `New request: ${req.method} ${req.url} ${req.ip}`);
       if (fails) {

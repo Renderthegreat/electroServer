@@ -5,6 +5,7 @@ let clicks = 0; //initalize the clicks variable.
 let styles = `h1 {
   color: red;
 }`; //initalize the styles variable.
+
 function main(Server, Content, Host, runtime, SSR) {
   let example = Server.create("get", "/example", async (req, res) => {
     let html = new Content("text/html");//creates content as type html.
