@@ -15,7 +15,7 @@ var _require2 = require("preact-render-to-string"),
 var r = render; //optional.
 var clicks = 0; //initalize the clicks variable.
 var styles = "h1 {\n  color: red;\n}"; //initalize the styles variable.
-function main(Server, Content, Host, runtime) {
+function main(Server, Content, Host, runtime, SSR) {
   var example = Server.create("get", "/example", /*#__PURE__*/function () {
     var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(req, res) {
       var html, pluralMarker, data;

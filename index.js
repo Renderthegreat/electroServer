@@ -549,13 +549,21 @@ SSR.add("hello", "Hello World!");
 run = WebServer;
 Runtime.Function = async () => {
   const loadPegio = eval(pegioData[0]);
-  include("./build/app.jsx", WebServer, Content, Host, Runtime);
+  include(
+    "./build/app.jsx", 
+    WebServer,
+    Content, 
+    Host, 
+    Runtime,
+    SSR
+  );
   include(
     "./plugins/example/build/plugin.jsx",
     WebServer,
     Content,
     Host,
     Runtime,
+    SSR,
   );
   include(
     "./plugins/editor/build/plugin.jsx",
@@ -563,6 +571,7 @@ Runtime.Function = async () => {
     Content,
     Host,
     Runtime,
+    SSR,
   );
   include("./plugins/help/build/plugin.jsx", WebServer, Content, Host, Runtime);
   await waitForCompletion();
