@@ -1,3 +1,12 @@
+/**
+ * @author renderlabs::cloud
+ * @copyright (c) [2024] [RENDERLABS]
+ * @license MIT
+ *
+ * You are required to keep this header intact.
+ * You are permitted to use this code.
+ */
+
 async function include (IPATH,ISERVER,ICONTENT,IHOST,IRUNTIME, ISSR) {
   const app = require(IPATH)
   // modifications most likely are not needed in any situation but feel free to edit this if you need to.

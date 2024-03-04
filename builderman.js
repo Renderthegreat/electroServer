@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+
 const babel = require('babel-core')
 const fs = require('fs')
 const defaultOptions = {

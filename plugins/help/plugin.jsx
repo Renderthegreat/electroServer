@@ -1,3 +1,14 @@
+/**
+ * @author renderlabs::cloud
+ * @copyright (c) [2024] [RENDERLABS]
+ * @license MIT
+ *
+ * You are required to keep this header intact.
+ * You are permitted to use this code.
+ */
+
+
+
 const { h } = require("preact");
 const { render } = require("preact-render-to-string");
 const r = render;
