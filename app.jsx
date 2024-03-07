@@ -46,6 +46,7 @@ function main(Server, Content, Host, runtime, SSR) {
   async function runner() {
     let host = new Host();//creates a new host.
     host.hostDir("get", "server", "/");  //this part host the server dir on path /.
+    await host.nuxt("./nuxt-edge/api/edge.js", "/nuxt", "/")
     await Server.start(80);//starts the server.
     await runtime.sleep(250);//sleeps for 0.25 seconds.
     runtime.log("Press (CTRL + Q) to pause. Or press (CTRL + E) to end.", "");

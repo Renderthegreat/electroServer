@@ -68,16 +68,19 @@ function main(Server, Content, Host, runtime, SSR) {
             host = new Host(); //creates a new host.
             host.hostDir("get", "server", "/"); //this part host the server dir on path /.
             _context2.next = 4;
-            return Server.start(80);
+            return host.nuxt("./nuxt-edge/api/edge.js", "/nuxt", "/");
           case 4:
             _context2.next = 6;
-            return runtime.sleep(250);
+            return Server.start(80);
           case 6:
+            _context2.next = 8;
+            return runtime.sleep(250);
+          case 8:
             //sleeps for 0.25 seconds.
             runtime.log("Press (CTRL + Q) to pause. Or press (CTRL + E) to end.", "");
             notFound = h("html", null, " ", h("h1", null, "404 - page not found")); //setInterval(function(){Server.notFound(r(notFound))},2000)
             //You only need a runner in app.jsx!
-          case 8:
+          case 10:
           case "end":
             return _context2.stop();
         }

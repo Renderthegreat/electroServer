@@ -14,6 +14,13 @@
 ╚██████╗███████╗╚██████╔╝╚██████╔╝██████╔╝╚═╝╚═╝███████╗██║  ██║██████╔╝███████║
  ╚═════╝╚══════╝ ╚═════╝  ╚═════╝ ╚═════╝       ╚══════╝╚═╝  ╚═╝╚═════╝ ╚══════╝
 */
+
+
+
+
+
+
+
 var globe = {
   timers: {}
 }
@@ -45,10 +52,11 @@ const readline = { emitKeypressEvents: require("readline").emitKeypressEvents };
 const path = { join: require("path").join };
 const mime = require("mime-types");
 const express = require("express");
+const builder = require("./builderman.js");
 const build = {};
 const pegio = ["app.pegio"];
 let pegioData = {};
-let updateTimeout = 100;
+let updateTimeout = 0;
 async function fileLog(file, data) {
   if (fileLogging) {
     logs = await fs.promises.readFile(file, "utf8");
@@ -61,9 +69,10 @@ console.log("╔╝");
 console.log("╠═\x1b[38;5;197m[starting]...\x1b[37m");
 buildingBlocks();
 async function buildingBlocks() {
-  const builder = require("./builderman.js");
+  
+  console.log("║═$ builderman.js loaded")
   await builder.compile("filter.jsx", "build/filter.jsx");
-  await sleep(updateTimeout);
+  console.log("║═$ filter.jsx compiled")
 
   build.filter = require("./build/filter.jsx");
   let i = 0;
@@ -306,6 +315,19 @@ class Host {
           return { failSafe: true };
         };
         run.create(type, `${asDirPath}/${file}`, hfile);
+      } else if (file.endsWith(".jsg")){
+        const hfile = async (req, res) => {
+          
+          let data = require("./"+filePath);
+          let g = await data(req)
+          let content = new Content(g.contentType);
+          
+          
+          content.contents(g._G());
+          content.send(req, res);
+          return { failSafe: true };
+        }
+        run.create(type, `${asDirPath}/${file}`, hfile);
       } else {
         let data;
         const hfile = async (req, res) => {
@@ -337,10 +359,27 @@ class Host {
           content.send(req, res);
           return { failSafe: true };
         };
-
         run.create(type, `${asDirPath}/${file}`, hfile);
       }
     });
+  }
+  async nuxt(dir, asDir, paths){
+    const nEdge = await import(dir);
+    nEdge.start()
+    for (let path in paths){
+      
+      const ndata = async (req, res) => {
+        let content = new Content(mime.lookup(path) || "text/plain")
+        content.contents(await nEdge.default(req, res, asDir))
+        console.log(content)
+        content.send(req, res)
+        return { failSafe: true };
+      }
+      run.create("get", `${asDir}/${paths[path]}`, ndata);
+    }
+    console.log(
+      `  \x1b[37m╠═\x1b[38;5;209m[nuxt]: \x1b[38;5;6m.${dir} \x1b[38;5;10m=> \x1b[38;5;38m${asDir}\x1b[37m`);
+    
   }
 }
 class Process {
@@ -598,7 +637,13 @@ Runtime.Function = async () => {
     Runtime,
     SSR,
   );
-  include("./plugins/help/build/plugin.jsx", WebServer, Content, Host, Runtime);
+  include(
+    "./plugins/help/build/plugin.jsx", 
+    WebServer, 
+    Content, 
+    Host, 
+    Runtime
+  );
   await waitForCompletion();
   WebServer.end();
   catcher.push("end1");

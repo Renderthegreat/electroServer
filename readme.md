@@ -36,8 +36,6 @@ The Nexus Server Program is a robust and versatile server application designed t
 
 - Clone the Nexus Server Program repository from [GitHub Repository](https://github.com/Renderthegreat/Nexus.Server.js).
 - Install Node.js and npm if not already installed on your system.
-- Navigate to the program directory in your terminal and run `npm install` to install dependencies. NOTE: If you downloaded the full repo this step is not needed.
-- You can find the installation command in `installation.md`
 
 #### 2. Configuration:
 

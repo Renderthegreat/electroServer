@@ -1,0 +1,10 @@
+let jsg = require("../nexus-modules/JSG")
+let RFR = async function (req, res) {
+	let app = new jsg(req, res)
+	app.print("hello world")
+	app.print(JSON.stringify(req.query))
+	
+	return app
+}
+
+module.exports = RFR
