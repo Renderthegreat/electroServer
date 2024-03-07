@@ -1,5 +1,41 @@
 #!/usr/bin/env bash
 npm install
+npm install @babel/core
+npm install @babel/preset-env
+npm install @babel/preset-react
+npm install @nuxt/core
+npm install @nuxt/http
+npm install @nuxt/server
+npm install @nuxt/utils-edge
+npm install @nuxt/vue-app
+npm install babel-core
+npm install babel-plugin-add-module-exports
+npm install consola
+npm install express
+npm install extract-css-chunks-webpack-plugin
+npm install friendly-errors-webpack-plugin
+npm install glob
+npm install hard-source-webpack-plugin
+npm install hash-sum
+npm install iconv-lite
+npm install memory-fs
+npm install mime-types
+npm install nuxt-edge
+npm install optimize-css-assets-webpack-plugin
+npm install pify
+npm install pnp-webpack-plugin
+npm install preact
+npm install preact-render-to-string
+npm install querystring
+npm install semver
+npm install time-fix-plugin
+npm install ufo
+npm install upath
+npm install vue
+npm install vue-loader
+npm install vue-router
+npm install vue-server-renderer
+npm install vue-style-loader
 cd ./nuxt-edge/
 npm install
 echo "ready"
