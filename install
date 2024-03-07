@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+npm install
+cd ./nuxt-edge/
+npm install
+echo "ready"
