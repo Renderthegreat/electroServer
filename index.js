@@ -371,7 +371,7 @@ class Host {
       const ndata = async (req, res) => {
         let content = new Content(mime.lookup(path) || "text/plain")
         content.contents(await nEdge.default(req, res, asDir))
-        console.log(content)
+        
         content.send(req, res)
         return { failSafe: true };
       }

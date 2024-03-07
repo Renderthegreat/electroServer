@@ -50,20 +50,20 @@ const nuxtConfig = {
   },
   build: {
     transpile: [],
-    analyze: false, // Add analyze option
-    analyzeDir: "", // Add analyzeDir option
-    extractCSS: false, // Add extractCSS option
-    analyzeBrowser: false, // Add analyzeBrowser option
-    analyzeModule: [], // Add analyzeModule option
-    loaders: {}, // Add loaders option
-    optimization: {}, // Add optimization option
-    terser: {}, // Add terser option
-    postcss: {}, // Add postcss option
-    babel: {}, // Add babel option
-    hardSource: false, // Add hardSource option
-    devMiddleware: {}, // Add devMiddleware option
-    webpackBar: {}, // Add webpackBar option
-    optimizeCss: false, // Add optimizeCss option
+    analyze: false, 
+    analyzeDir: "", 
+    extractCSS: false,
+    analyzeBrowser: false, 
+    analyzeModule: [], 
+    loaders: {}, 
+    optimization: {}, 
+    terser: {}, 
+    postcss: {}, 
+    babel: {}, 
+    hardSource: false,
+    devMiddleware: {}, 
+    webpackBar: {}, 
+    optimizeCss: false,
   },
   
   optimization: {
@@ -77,8 +77,8 @@ const nuxtConfig = {
         ]
       },
     },
-    splitChunks: {}, // Add splitChunks option
-    minimize: false, // Add minimize option
+    splitChunks: {},
+    minimize: false,
   },
   modules: [],
   _modules: [],
@@ -96,10 +96,10 @@ const nuxtConfig = {
   server: {
     host: "localhost",
     port: 3000,
-    timing: false, // Add timing option
-    strictPort: false, // Add strictPort option
+    timing: false,
+    strictPort: false,
   },
-  // Add other required options here
+  
 };
 async function start(){
   nuxt = new Nuxt(nuxtConfig);
