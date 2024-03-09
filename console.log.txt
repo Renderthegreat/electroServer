@@ -18,6 +18,5 @@
   [37m║║╠═[38;5;6mServer running...
 [37m  ║║╠═Press (CTRL + Q) to pause. Or press (CTRL + E) to end.
 [37m  ║║╠═[38;5;214mNew request.[37m
-[37m  ║║╠═[38;5;10mRequest complete: GET /api in 8.7s
-[37m  ║║╠═[38;5;214mNew request.[37m
-[37m  ║║╠═[38;5;10mRequest complete: GET /api in 0.9s
+  ║║╠═[38;5;209m[hosting] [38;5;196mError: [38;5;6mFile data is invalid or it is binary. (Not failure)[37m
+[37m  ║║╠═[38;5;10mRequest complete: GET /icon.png in 9s

@@ -289,6 +289,7 @@ class Host {
         asDir + plusDir
       } \x1b[37m`,
     );
+    asDirPath = asDirPath
     //dirPath = dirPath.replace(asDir, '');
     const files = fs.readdirSync(dir);
     files.forEach(async (file) => {
@@ -317,9 +318,9 @@ class Host {
           return { failSafe: true };
         };
 
-        run.create(type, `${asDirPath}/${file}`, hfile);
+        run.create(type, `${asDir + plusDir + file}`, hfile);
         if (file === "index.html") {
-          run.create(type, `${asDirPath}/`, hfile);
+          run.create(type, `${asDir + plusDir}/`, hfile);
         }
       } else if (file.endsWith(".js")) {
         let data = await fs.promises.readFile(filePath, "utf8");
@@ -340,7 +341,7 @@ class Host {
           js.send(req, res);
           return { failSafe: true };
         };
-        run.create(type, `${asDirPath}/${file}`, hfile);
+        run.create(type, `${asDir + plusDir + file}`, hfile);
       } else if (file.endsWith(".css")) {
         let data = await fs.promises.readFile(filePath, "utf8");
         const hfile = async (req, res) => {
@@ -372,12 +373,14 @@ class Host {
           content.send(req, res);
           return { failSafe: true };
         }
-        run.create(type, `${asDirPath}/${file}`, hfile);
+        run.create(type, `${asDir + plusDir + file}`, hfile);
       } else {
         let data;
         const hfile = async (req, res) => {
           let content = new Content(mime.lookup(file) || "text/plain");
-          let data = await fs.promises.readFile(filePath);
+          const fileSize = fs.statSync(filePath).size;
+          let data = Buffer.alloc(fileSize);
+          fs.readSync(fs.openSync(filePath, 'r'), data, 0, fileSize, 0);
           let nonBinData = await fs.promises.readFile(filePath, "utf8");
 
           try {
@@ -393,18 +396,17 @@ class Host {
             data = replacedString;
           } catch (err) {
             console.log(
-              "  ║║╠═\x1b[38;5;209m[hosting] \x1b[38;5;196mError: \x1b[38;5;6mFile data is invalid\x1b[37m",
+              "  ║║╠═\x1b[38;5;209m[hosting] \x1b[38;5;196mError: \x1b[38;5;6mFile data is invalid or it is binary. (Not failure)\x1b[37m",
             );
-
-            data = nonBinData;
           }
 
-          //data may be binary fix later lol:O
+          
+          res.setHeader('Content-Type', content.type);
           content.contents(data);
           content.send(req, res);
           return { failSafe: true };
         };
-        run.create(type, `${asDirPath}/${file}`, hfile);
+        run.create(type, `${asDir + plusDir + file}`, hfile);
       }
     });
   }

@@ -61,15 +61,15 @@ function main(Server, Content, Host, runtime, SSR) {
   }
   function _runner() {
     _runner = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
-      var hoster;
+      var host;
       return _regeneratorRuntime().wrap(function _callee2$(_context2) {
         while (1) switch (_context2.prev = _context2.next) {
           case 0:
             _context2.next = 2;
             return require("./host.composable.js");
           case 2:
-            hoster = _context2.sent;
-            hoster(Host, Server, Content, runtime, SSR);
+            host = _context2.sent;
+            host(Host, Server, Content, runtime, SSR);
           case 4:
           case "end":
             return _context2.stop();

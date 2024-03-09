@@ -44,8 +44,8 @@ function main(Server, Content, Host, runtime, SSR) {
     return { failsafe:true }; //tells the server to return a message if none is returned.
   });
   async function runner() {
-    const hoster = await require("./host.composable.js")
-    hoster(Host, Server, Content, runtime, SSR);
+    const host = await require("./host.composable.js")
+    host(Host, Server, Content, runtime, SSR);
   }
   runner();
 }
