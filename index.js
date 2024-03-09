@@ -20,7 +20,6 @@
 
 
 
-
 var globe = {
   timers: {}
 }
@@ -30,7 +29,9 @@ function debug(message) {
 //CONFIGURATION
 const throwErrorOnNoFailSafe = true;
 const fileLogging = false; //Logs Requests
-const imports = { app: "./app.jsx" };
+const JSXConfig = require("./JSX.config.json");
+const imports = { ...JSXConfig.imports };
+const outputs = { ...JSXConfig.exports };
 let plugins = {};
 
 plugins.autoInstall = true;
@@ -53,10 +54,18 @@ const path = { join: require("path").join };
 const mime = require("mime-types");
 const express = require("express");
 const builder = require("./builderman.js");
+const includer = require("./includes.composable.js");
 const build = {};
 const pegio = ["app.pegio"];
 let pegioData = {};
 let updateTimeout = 0;
+fs.promises.writeFile("./console.log.txt", "")
+const log = console.log
+function print(text){
+  log(text)
+  fs.appendFileSync('console.log.txt', text + '\n')
+}
+console.log = print
 async function fileLog(file, data) {
   if (fileLogging) {
     logs = await fs.promises.readFile(file, "utf8");
@@ -79,6 +88,7 @@ async function buildingBlocks() {
   for (impo in imports) {
     i++;
     await builder.compile(imports[impo], `build/${impo}.jsx`);
+    outputs[impo] = `./build/${impo}.jsx`
     console.log(
       `║ \x1b[38;5;209m${i} \x1b[38;5;6mof \x1b[38;5;209m${
         Object.keys(imports).length
@@ -135,6 +145,7 @@ async function buildingBlocks() {
             i2++;
           }
         }
+        outputs[item] = `./plugins/${pluginName}/build/${allFiles[file]}`
         console.log(
           `║ \x1b[38;5;209m${i} \x1b[38;5;6mof \x1b[38;5;209m${
             Object.keys(plugins).length
@@ -185,7 +196,7 @@ async function waitForCompletion() {
   });
 }
 globe.time = async (name) => {
-  globe.timers[name] = performance.now().toFixed(3);
+  globe.timers[name] = Math.floor(performance.now()*10)/10
 }
 globe.timeEnd = async (name) => {
   const startTime = globe.timers[name];
@@ -193,7 +204,7 @@ globe.timeEnd = async (name) => {
     const endTime = performance.now();
     const elapsedTime = endTime - startTime;
     delete globe.timers[name];
-    return elapsedTime.toFixed(3);
+    return Math.floor(elapsedTime*10)/10
   } else {
     console.log(`Request timer '${name}' not found.`);
   }
@@ -217,6 +228,38 @@ async function catcherComplete(pro) {
 }
 class Host {
   constructor() {}
+  async hostFile(type, dir, asDir){
+    console.log(
+      `  ╠═\x1b[38;5;209m[hosting]: \x1b[38;5;6m${dir} \x1b[38;5;10m=> \x1b[38;5;38m${
+        asDir
+      } \x1b[37m`,
+    );
+    
+    const data = await fs.promises.readFile(dir, "utf8")
+    run.create(type, asDir, async (req, res)=>{
+    let content = new Content(mime.lookup(dir))
+    content.contents(data)
+    content.send(req, res)
+    return { failsafe:true }
+    }
+  )}
+  async hostAPI(type, dir, asDir){
+    console.log(
+      `  ╠═\x1b[38;5;209m[hosting]: \x1b[38;5;6m${dir} \x1b[38;5;10m=> \x1b[38;5;38m${
+        asDir
+      } \x1b[37m`,
+    );
+    
+    const data = await require(dir)
+    
+    run.create(type, asDir, async (req, res)=>{
+      let g = await data(req)
+      let content = new Content(g.contentType)
+      content.contents(g._G())
+      content.send(req, res)
+      return { failsafe:true }
+    })
+  }
   hostDir(type, dir, asDir) {
     let asDirPath;
     let dirPath = path.join("/", dir);
@@ -248,16 +291,17 @@ class Host {
     );
     //dirPath = dirPath.replace(asDir, '');
     const files = fs.readdirSync(dir);
-    files.forEach((file) => {
+    files.forEach(async (file) => {
       const filePath = path.join(dir, file);
       const asFilePath = path.join(asDir, file);
       const stat = fs.statSync(filePath);
       if (stat.isDirectory()) {
         this.hostDir(type, filePath, asDir);
       } else if (file.endsWith(".html")) {
+        let data = await fs.promises.readFile(filePath, "utf8");
         const hfile = async (req, res) => {
           let html = new Content("text/html");
-          let data = await fs.promises.readFile(filePath, "utf8");
+          
           const regex = /#{{\s*(.*?)\s*}}/g;
           const replacedString = data.replace(regex, (match, p1) => {
             const replacement = p1.trim();
@@ -278,9 +322,10 @@ class Host {
           run.create(type, `${asDirPath}/`, hfile);
         }
       } else if (file.endsWith(".js")) {
+        let data = await fs.promises.readFile(filePath, "utf8");
         const hfile = async (req, res) => {
           let js = new Content("text/javascript");
-          let data = await fs.promises.readFile(filePath, "utf8");
+          
           const regex = /#{{\s*(.*?)\s*}}/g;
           const replacedString = data.replace(regex, (match, p1) => {
             const replacement = p1.trim();
@@ -297,9 +342,10 @@ class Host {
         };
         run.create(type, `${asDirPath}/${file}`, hfile);
       } else if (file.endsWith(".css")) {
+        let data = await fs.promises.readFile(filePath, "utf8");
         const hfile = async (req, res) => {
           let css = new Content("text/css");
-          let data = await fs.promises.readFile(filePath, "utf8");
+          
           const regex = /#{{\s*(.*?)\s*}}/g;
           const replacedString = data.replace(regex, (match, p1) => {
             const replacement = p1.trim();
@@ -316,12 +362,11 @@ class Host {
         };
         run.create(type, `${asDirPath}/${file}`, hfile);
       } else if (file.endsWith(".jsg")){
+        let data = require("./"+filePath);
         const hfile = async (req, res) => {
           
-          let data = require("./"+filePath);
           let g = await data(req)
           let content = new Content(g.contentType);
-          
           
           content.contents(g._G());
           content.send(req, res);
@@ -365,7 +410,6 @@ class Host {
   }
   async nuxt(dir, asDir, paths){
     const nEdge = await import(dir);
-    nEdge.start()
     for (let path in paths){
       
       const ndata = async (req, res) => {
@@ -378,8 +422,9 @@ class Host {
       run.create("get", `${asDir}/${paths[path]}`, ndata);
     }
     console.log(
-      `  \x1b[37m╠═\x1b[38;5;209m[nuxt]: \x1b[38;5;6m.${dir} \x1b[38;5;10m=> \x1b[38;5;38m${asDir}\x1b[37m`);
-    
+      `  \x1b[37m╠═\x1b[38;5;209m[nuxt]: \x1b[38;5;6m${dir} \x1b[38;5;10m=> \x1b[38;5;38m${asDir}\x1b[37m`
+    );
+     await nEdge.start()
   }
 }
 class Process {
@@ -415,7 +460,21 @@ class ServerRuntime {
     this.Function = async () => {};
   }
   async run() {
-    await this.Function();
+    if(this.handler){
+      try{
+        await this.Function();
+      }
+      catch(err){
+        this.handler(err);
+      }
+    }
+    else{
+      await this.Function();
+    }
+    
+  }
+  handle(handler){
+    this.handler = handler;
   }
   async sleep(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
@@ -482,7 +541,7 @@ class Server {
       console.log(
         `\x1b[37m  ║║╠═\x1b[38;5;10mRequest complete: ${
           req.method
-        } ${req.url.split(32)} in ${await globe.timeEnd(req.random)}s`,
+        } ${req.url.split(32)} in ${ await globe.timeEnd(req.random)}s`,
       );
       fileLog("server.log", `New request: ${req.method} ${req.url} ${req.ip}`);
       if (fails) {
@@ -613,37 +672,8 @@ SSR.add("hello", "Hello World!");
 run = WebServer;
 Runtime.Function = async () => {
   const loadPegio = eval(pegioData[0]);
-  include(
-    "./build/app.jsx", 
-    WebServer,
-    Content, 
-    Host, 
-    Runtime,
-    SSR
-  );
-  include(
-    "./plugins/example/build/plugin.jsx",
-    WebServer,
-    Content,
-    Host,
-    Runtime,
-    SSR,
-  );
-  include(
-    "./plugins/editor/build/plugin.jsx",
-    WebServer,
-    Content,
-    Host,
-    Runtime,
-    SSR,
-  );
-  include(
-    "./plugins/help/build/plugin.jsx", 
-    WebServer, 
-    Content, 
-    Host, 
-    Runtime
-  );
+  const includes = Object.values(outputs)
+  includer(include, includes, Host, WebServer, Content, Runtime, SSR)
   await waitForCompletion();
   WebServer.end();
   catcher.push("end1");

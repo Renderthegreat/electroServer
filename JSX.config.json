@@ -1,0 +1,8 @@
+{
+	"imports": {
+		"app": "./app.jsx"
+	},
+	"exports": {
+		"app": "./build/app.jsx"
+	}
+}

@@ -1,0 +1,4 @@
+module.exports = async function(path){
+	const data = await import(path)
+	return data
+}

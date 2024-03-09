@@ -44,16 +44,8 @@ function main(Server, Content, Host, runtime, SSR) {
     return { failsafe:true }; //tells the server to return a message if none is returned.
   });
   async function runner() {
-    let host = new Host();//creates a new host.
-    host.hostDir("get", "server", "/");  //this part host the server dir on path /.
-    await host.nuxt("./nuxt-edge/api/edge.js", "/nuxt", "/")
-    await Server.start(80);//starts the server.
-    await runtime.sleep(250);//sleeps for 0.25 seconds.
-    runtime.log("Press (CTRL + Q) to pause. Or press (CTRL + E) to end.", "");
-    let notFound = <html> <h1>404 - page not found</h1></html>
-    //setInterval(function(){Server.notFound(r(notFound))},2000)
-    
-    //You only need a runner in app.jsx!
+    const hoster = await require("./host.composable.js")
+    hoster(Host, Server, Content, runtime, SSR);
   }
   runner();
 }

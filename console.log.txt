@@ -1,0 +1,23 @@
+ 🏗️  [buildingBlocks] Building...
+╔╝
+╠═[38;5;197m[starting]...[37m
+║═$ builderman.js loaded
+║═$ filter.jsx compiled
+║ [38;5;209m1 [38;5;6mof [38;5;209m1 [38;5;10mImported and compiled:	[38;5;38m'app'[37m =>
+║ [38;5;209m1 [38;5;6mof [38;5;209m2 [38;5;10mPlugins imported and compiled:	[38;5;38m'Example Plugin'[37m =>
+║ [38;5;209m2 [38;5;6mof [38;5;209m2 [38;5;10mPlugins imported and compiled:	[38;5;38m'Help Plugin'[37m =>
+🌩️ [buildingBlocks] complete!
+╚═╗[Cloud::Labs Server Function] {(Press CTRL + C) to quit}
+  ╠═[38;5;209m[hosting]: [38;5;6m./server [38;5;10m=> [38;5;38m/ [37m
+  ╠═[38;5;209m[hosting]: [38;5;6m./server/assets [38;5;10m=> [38;5;38m/assets/ [37m
+  ╠═[38;5;209m[hosting]: [38;5;6m./readme.md [38;5;10m=> [38;5;38m/read [37m
+  ╠═[38;5;209m[hosting]: [38;5;6m./server/app.jsg [38;5;10m=> [38;5;38m/api [37m
+  [37m╠═[38;5;209m[nuxt]: [38;5;6m./nuxt-edge/api/edge.js [38;5;10m=> [38;5;38m/nuxt[37m
+  ╠╦═[36m[Server Function] [0m
+[37m  ║╠╦═[38;5;13m[Running on port: 80]
+  [37m║║╠═[38;5;6mServer running...
+[37m  ║║╠═Press (CTRL + Q) to pause. Or press (CTRL + E) to end.
+[37m  ║║╠═[38;5;214mNew request.[37m
+[37m  ║║╠═[38;5;10mRequest complete: GET /api in 8.7s
+[37m  ║║╠═[38;5;214mNew request.[37m
+[37m  ║║╠═[38;5;10mRequest complete: GET /api in 0.9s

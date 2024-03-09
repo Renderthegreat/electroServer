@@ -109,7 +109,9 @@ async function start(){
   }
 }
 async function init(req, res, from) {
-  
+  if (!nuxt.renderRoute){
+    return "nuxt is not ready, please wait..."
+  }
   const modifiedUrl = req.url.replace(from, '');
   const { html } = await nuxt.renderRoute(modifiedUrl);
   return html
