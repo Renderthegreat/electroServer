@@ -197,7 +197,7 @@ For more information and updates, visit the Renderlabs::Cloud website or refer t
 
 ### Appendix:
 
-- **GitHub Repository Link:** [Github](https://github.com/Renderthegreat/Electro Server.js.Server.js)
+- **GitHub Repository Link:** [Github](https://github.com/Renderthegreat/electroServer)>
 - **Renderlabs::Cloud Website:** [Renderlabs.cloud](https://renderlabs.cloud)
 
 ---

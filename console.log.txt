@@ -18,4 +18,4 @@
   [37m║║╠═[38;5;6mServer running...
 [37m  ║║╠═Press (CTRL + Q) to pause. Or press (CTRL + E) to end.
 [37m  ║║╠═[38;5;214mNew request.[37m
-[37m  ║║╠═[38;5;10mRequest complete: GET / in 6.8s
+[37m  ║║╠═[38;5;10mRequest complete: GET / in 12s
