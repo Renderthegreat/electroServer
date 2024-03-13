@@ -1,4 +1,5 @@
 {
+	"port": 80,
 	"pegio": "./app.pegio",
 	"builderman": "./builderman.js",
 	"includer": "./includes.composable.js",
