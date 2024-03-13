@@ -1,12 +1,12 @@
- 🏗️  [buildingBlocks] Building...
+ ║[31m[buildingBlocks] [38;5;39mBuilding...[37m
 ╔╝
 ╠═[38;5;197m[starting]...[37m
-║═$ builderman.js loaded
-║═$ filter.jsx compiled
-║ [38;5;209m1 [38;5;6mof [38;5;209m1 [38;5;10mImported and compiled:	[38;5;38m'app'[37m =>
-║ [38;5;209m1 [38;5;6mof [38;5;209m2 [38;5;10mPlugins imported and compiled:	[38;5;38m'Example Plugin'[37m =>
-║ [38;5;209m2 [38;5;6mof [38;5;209m2 [38;5;10mPlugins imported and compiled:	[38;5;38m'Help Plugin'[37m =>
-🌩️ [buildingBlocks] complete!
+║═[38;5;118m$[36;5;118m builderman.js loaded[37m
+║═[38;5;118m$[36;5;118m filter.jsx compiled[37m
+║ [38;5;209m1 [38;5;6mof [38;5;209m1 [38;5;10mImported and compiled:	[38;5;38m'app'[37m
+║ [38;5;209m1 [38;5;6mof [38;5;209m2 [38;5;10mPlugins imported and compiled:	[38;5;38m'Example Plugin'[37m 
+║ [38;5;209m2 [38;5;6mof [38;5;209m2 [38;5;10mPlugins imported and compiled:	[38;5;38m'Help Plugin'[37m 
+║[31m[buildingBlocks] [33mc[32mo[36mm[34mp[35ml[31me[33mt[34me[35]![37m
 ╚═╗[Cloud::Labs Server Function] {(Press CTRL + C) to quit}
   ╠═[38;5;209m[hosting]: [38;5;6m./server [38;5;10m=> [38;5;38m/ [37m
   ╠═[38;5;209m[hosting]: [38;5;6m./server/assets [38;5;10m=> [38;5;38m/assets/ [37m
@@ -17,6 +17,3 @@
 [37m  ║╠╦═[38;5;13m[Running on port: 80]
   [37m║║╠═[38;5;6mServer running...
 [37m  ║║╠═Press (CTRL + Q) to pause. Or press (CTRL + E) to end.
-[37m  ║║╠═[38;5;214mNew request.[37m
-  ║║╠═[38;5;209m[hosting] [38;5;196mError: [38;5;6mFile data is invalid or it is binary. (Not failure)[37m
-[37m  ║║╠═[38;5;10mRequest complete: GET /icon.png in 9s

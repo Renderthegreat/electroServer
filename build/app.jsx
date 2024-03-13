@@ -18,13 +18,12 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
  */
 
 var _require = require("preact"),
-  h = _require.h; //very important.
+  h = _require.h;
 var _require2 = require("preact-render-to-string"),
-  render = _require2.render; //also very important.
-var r = render; //optional.
-var clicks = 0; //initalize the clicks variable.
-var styles = "h1 {\n  color: red;\n}"; //initalize the styles variable.
-
+  render = _require2.render;
+var r = render;
+var clicks = 0;
+var styles = "h1 {\n  color: orange;\n  animation: color-change 5s infinite;\n}\n\n@keyframes color-change {\n  0% {\n    color: orange;\n  }\n  10% {\n    color: red;\n  }\n  90% {\n    color: blue;\n  }\n  100% {\n    color: orange;\n  }\n}";
 function main(Server, Content, Host, runtime, SSR) {
   var example = Server.create("get", "/example", /*#__PURE__*/function () {
     var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(req, res) {
@@ -32,17 +31,16 @@ function main(Server, Content, Host, runtime, SSR) {
       return _regeneratorRuntime().wrap(function _callee$(_context) {
         while (1) switch (_context.prev = _context.next) {
           case 0:
-            html = new Content("text/html"); //creates content as type html.
-            clicks++; // add one to the clicks variable.
-
+            html = new Content("text/html");
+            clicks++;
             if (clicks == 1) {
               pluralMarker = "";
             } else {
               pluralMarker = "s";
             }
             data = h("html", null, h("body", null, h("div", null, h("h1", null, "This example page has ", clicks, " view", pluralMarker, ".")), h("style", null, styles)));
-            html.contents(r(data)); //sets the html to the data.
-            html.send(req, res); //sends the html to the client.
+            html.contents(r(data));
+            html.send(req, res);
             return _context.abrupt("return", {
               failsafe: true
             });

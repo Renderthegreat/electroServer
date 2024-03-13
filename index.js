@@ -6,20 +6,10 @@
  * You are required to keep this header intact.
  * You are permitted to use this code.
  */
-/*
- ██████╗██╗      ██████╗ ██╗   ██╗██████╗       ██╗      █████╗ ██████╗ ███████╗
-██╔════╝██║     ██╔═══██╗██║   ██║██╔══██╗██╗██╗██║     ██╔══██╗██╔══██╗██╔════╝
-██║     ██║     ██║   ██║██║   ██║██║  ██║╚═╝╚═╝██║     ███████║██████╔╝███████╗
-██║     ██║     ██║   ██║██║   ██║██║  ██║██╗██╗██║     ██╔══██║██╔══██╗╚════██║
-╚██████╗███████╗╚██████╔╝╚██████╔╝██████╔╝╚═╝╚═╝███████╗██║  ██║██████╔╝███████║
- ╚═════╝╚══════╝ ╚═════╝  ╚═════╝ ╚═════╝       ╚══════╝╚═╝  ╚═╝╚═════╝ ╚══════╝
-*/
 
-
-
-
-
-
+console.log(" ║\x1b[31m[buildingBlocks]\x1b[38;5;39m Starting up...\x1b[37m");
+console.time("║uptime");
+const config = require("./ELECTRO.config.json");
 var globe = {
   timers: {}
 }
@@ -28,18 +18,15 @@ function debug(message) {
 }
 //CONFIGURATION
 const throwErrorOnNoFailSafe = true;
-const fileLogging = false; //Logs Requests
+const fileLogging = config.logging.enabled;
 const JSXConfig = require("./JSX.config.json");
 const imports = { ...JSXConfig.imports };
 const outputs = { ...JSXConfig.exports };
-let plugins = {};
-
-plugins.autoInstall = true;
-
+let plugins = config.plugins
+plugins.autoInstall = config.pluginAutoInstall
 
 
-console.log(" 🤖  [buildingBlocks] Starting up...");
-console.time("║uptime");
+
 const fs = require("fs");
 const apps = {};
 let catcher = [];
@@ -53,17 +40,19 @@ const readline = { emitKeypressEvents: require("readline").emitKeypressEvents };
 const path = { join: require("path").join };
 const mime = require("mime-types");
 const express = require("express");
-const builder = require("./builderman.js");
-const includer = require("./includes.composable.js");
+const builder = require(config.builderman);
+const includer = require(config.includer);
+const SSRJSON = require("./SSRReplacements.config.json")
+
 const build = {};
-const pegio = ["app.pegio"];
+const pegio = [config.pegio];
 let pegioData = {};
 let updateTimeout = 0;
-fs.promises.writeFile("./console.log.txt", "")
+fs.promises.writeFile(config.consoleFile, "")
 const log = console.log
 function print(text){
   log(text)
-  fs.appendFileSync('console.log.txt', text + '\n')
+  fs.appendFileSync(config.consoleFile, text + '\n')
 }
 console.log = print
 async function fileLog(file, data) {
@@ -73,17 +62,16 @@ async function fileLog(file, data) {
     await fs.promises.writeFile(file, logs);
   }
 }
-console.log(" 🏗️  [buildingBlocks] Building...");
+console.log(" ║\x1b[31m[buildingBlocks] \x1b[38;5;39mBuilding...\x1b[37m");
 console.log("╔╝");
 console.log("╠═\x1b[38;5;197m[starting]...\x1b[37m");
 buildingBlocks();
 async function buildingBlocks() {
   
-  console.log("║═$ builderman.js loaded")
+  console.log("║═\x1b[38;5;118m$\x1b[36;5;118m builderman.js loaded\x1b[37m")
   await builder.compile("filter.jsx", "build/filter.jsx");
-  console.log("║═$ filter.jsx compiled")
-
-  build.filter = require("./build/filter.jsx");
+  console.log("║═\x1b[38;5;118m$\x1b[36;5;118m filter.jsx compiled\x1b[37m")
+  build.filter = require(config.filter);
   let i = 0;
   for (impo in imports) {
     i++;
@@ -92,7 +80,7 @@ async function buildingBlocks() {
     console.log(
       `║ \x1b[38;5;209m${i} \x1b[38;5;6mof \x1b[38;5;209m${
         Object.keys(imports).length
-      } \x1b[38;5;10mImported and compiled:	\x1b[38;5;38m'${impo}'\x1b[37m =>`,
+      } \x1b[38;5;10mImported and compiled:	\x1b[38;5;38m'${impo}'\x1b[37m`,
     );
   }
   i = 0;
@@ -136,7 +124,7 @@ async function buildingBlocks() {
         for (file in allFiles) {
           if (
             !allFiles[file].includes("plugin.json") &&
-            allFiles[file].includes(".jsx")
+            allFiles[file].includes(".jsx") && !config.pluginLazyLoader
           ) {
             builder.compile(
               plugin + allFiles[file],
@@ -146,10 +134,10 @@ async function buildingBlocks() {
           }
         }
         outputs[item] = `./plugins/${pluginName}/build/${allFiles[file]}`
-        console.log(
+        if(!config.pluginLazyLoader) console.log(
           `║ \x1b[38;5;209m${i} \x1b[38;5;6mof \x1b[38;5;209m${
             Object.keys(plugins).length
-          } \x1b[38;5;10mPlugins imported and compiled:	\x1b[38;5;38m'${pluginLooseName}'\x1b[37m =>`,
+          } \x1b[38;5;10mPlugins imported and compiled:	\x1b[38;5;38m'${pluginLooseName}'\x1b[37m `,
         );
       }
     }
@@ -159,15 +147,12 @@ async function buildingBlocks() {
     pegioData[peg] = data;
   }
   //build[impo] = await require(`./build/${impo}.jsx`);
-
-  //SERVER PROCESS HERE!!!
-  //Create your own server here! (if you understand it of course)
   class WebServerProcess {
     constructor(name) {
       this.name = name;
     }
     async main() {
-      console.log("🌩️ [buildingBlocks] complete!");
+      console.log("║\x1b[31m[buildingBlocks] \x1b[33mc\x1b[32mo\x1b[36mm\x1b[34mp\x1b[35ml\x1b[31me\x1b[33mt\x1b[34me\x1b[35]!\x1b[37m");
       console.log(
         "╚═╗[Cloud::Labs Server Function] {(Press CTRL + C) to quit}",
       );
@@ -396,7 +381,7 @@ class Host {
             data = replacedString;
           } catch (err) {
             console.log(
-              "  ║║╠═\x1b[38;5;209m[hosting] \x1b[38;5;196mError: \x1b[38;5;6mFile data is invalid or it is binary. (Not failure)\x1b[37m",
+              "  ║║╠═\x1b[38;5;209m[hosting] \x1b[33;5;196mWarn: \x1b[38;5;6mFile data is invalid or it is binary. (Not failure)\x1b[37m",
             );
           }
 
@@ -524,7 +509,7 @@ class Server {
       result = await func(req, res);
       //debug("request end ")
       try {
-        if (result.failSafe !== undefined) {
+        if (result !== undefined) {
         } else {
           throw "║║═\x1b[31mx \x1b[32mNo response data.";
         }
@@ -545,7 +530,7 @@ class Server {
           req.method
         } ${req.url.split(32)} in ${ await globe.timeEnd(req.random)}s`,
       );
-      fileLog("server.log", `New request: ${req.method} ${req.url} ${req.ip}`);
+      fileLog(config.logging.file, `New request: ${req.method} ${req.url} ${req.ip}`);
       if (fails) {
         //throw ( "║║═\x1b[31mx \x1b[32mFailSafe was not created.");
       }
@@ -666,11 +651,16 @@ class Server {
   active = true;
 }
 
+
+
+
 //APP
 const WebServer = new Server(async (req, res) => {}, "WebServer");
 const Runtime = new ServerRuntime(apps["WebServer"], WebServer);
 SSR = new ssr();
-SSR.add("hello", "Hello World!");
+for(let text of Object.keys(SSRJSON)){
+  SSR.add(text, SSRJSON[text])
+}
 run = WebServer;
 Runtime.Function = async () => {
   const loadPegio = eval(pegioData[0]);

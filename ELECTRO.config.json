@@ -1,0 +1,16 @@
+{
+	"pegio": "./app.pegio",
+	"builderman": "./builderman.js",
+	"includer": "./includes.composable.js",
+	"consoleFile": "./console.log.txt",
+	"filter": "./build/filter.jsx",
+	"logging": {
+		"file": "./server.log",
+		"enabled": false
+	},
+	"plugins": {
+		
+	},
+	"pluginAutoInstall": true,
+	"pluginLazyLoader": false
+}
