@@ -3,6 +3,7 @@ let RFR = async function (req, res) {
 	let app = new jsg(req, res)
 	app.print("hello world")
 	app.print(JSON.stringify(req.url))
+	app.print("You found the easter egg! 💀🎺")
 	
 	return app
 }

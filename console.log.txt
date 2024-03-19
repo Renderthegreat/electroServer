@@ -18,4 +18,8 @@
   [37m║║╠═[38;5;6mServer running...
 [37m  ║║╠═Press (CTRL + Q) to pause. Or press (CTRL + E) to end.
 [37m  ║║╠═[38;5;214mNew request.[37m
-[37m  ║║╠═[38;5;10mRequest complete: GET / in 12s
+[37m  ║║╠═[38;5;10mRequest complete: GET / in 12.5s
+[37m  ║║╠═[38;5;214mNew request.[37m
+[37m  ║║╠═[38;5;10mRequest complete: GET / in 1.9s
+[37m  ║║╠═[38;5;214mNew request.[37m
+[37m  ║║╠═[38;5;10mRequest complete: GET /nuxt/ in 608.3s

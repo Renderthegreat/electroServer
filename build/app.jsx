@@ -64,7 +64,7 @@ function main(Server, Content, Host, runtime, SSR) {
         while (1) switch (_context2.prev = _context2.next) {
           case 0:
             _context2.next = 2;
-            return require("./host.composable.js");
+            return require("./config/host.composable.js");
           case 2:
             host = _context2.sent;
             host(Host, Server, Content, runtime, SSR);

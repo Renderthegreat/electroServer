@@ -9,23 +9,21 @@
 
 console.log(" ║\x1b[31m[buildingBlocks]\x1b[38;5;39m Starting up...\x1b[37m");
 console.time("║uptime");
-const config = require("./ELECTRO.config.json");
+const config = require("./config/ELECTRO.config.json");
 var globe = {
-  timers: {}
-}
+  timers: {},
+};
 function debug(message) {
-  console.log("  ║║╠═$ debug point reached "+ message)
+  console.log("  ║║╠═$ debug point reached " + message);
 }
 //CONFIGURATION
 const throwErrorOnNoFailSafe = true;
 const fileLogging = config.logging.enabled;
-const JSXConfig = require("./JSX.config.json");
+const JSXConfig = require("./config/JSX.config.json");
 const imports = { ...JSXConfig.imports };
 const outputs = { ...JSXConfig.exports };
-let plugins = config.plugins
-plugins.autoInstall = config.pluginAutoInstall
-
-
+let plugins = config.plugins;
+plugins.autoInstall = config.pluginAutoInstall;
 
 const fs = require("fs");
 const apps = {};
@@ -39,22 +37,26 @@ var SSR = "<pending>";
 const readline = { emitKeypressEvents: require("readline").emitKeypressEvents };
 const path = { join: require("path").join };
 const mime = require("mime-types");
+const getOwnEnumerablePropertySymbols = (object) =>
+  Object.getOwnPropertySymbols(object).filter((keySymbol) =>
+    Object.prototype.propertyIsEnumerable.call(object, keySymbol)
+  );
 const express = require("express");
 const builder = require(config.builderman);
 const includer = require(config.includer);
-const SSRJSON = require("./SSRReplacements.config.json")
+const SSRJSON = require("./config/SSRReplacements.config.json");
 
 const build = {};
 const pegio = [config.pegio];
 let pegioData = {};
 let updateTimeout = 0;
-fs.promises.writeFile(config.consoleFile, "")
-const log = console.log
-function print(text){
-  log(text)
-  fs.appendFileSync(config.consoleFile, text + '\n')
+fs.promises.writeFile(config.consoleFile, "");
+const log = console.log;
+function print(text) {
+  log(text);
+  fs.appendFileSync(config.consoleFile, text + "\n");
 }
-console.log = print
+console.log = print;
 async function fileLog(file, data) {
   if (fileLogging) {
     logs = await fs.promises.readFile(file, "utf8");
@@ -67,20 +69,19 @@ console.log("╔╝");
 console.log("╠═\x1b[38;5;197m[starting]...\x1b[37m");
 buildingBlocks();
 async function buildingBlocks() {
-  
-  console.log("║═\x1b[38;5;118m$\x1b[36;5;118m builderman.js loaded\x1b[37m")
+  console.log("║═\x1b[38;5;118m$\x1b[36;5;118m builderman.js loaded\x1b[37m");
   await builder.compile("filter.jsx", "build/filter.jsx");
-  console.log("║═\x1b[38;5;118m$\x1b[36;5;118m filter.jsx compiled\x1b[37m")
+  console.log("║═\x1b[38;5;118m$\x1b[36;5;118m filter.jsx compiled\x1b[37m");
   build.filter = require(config.filter);
   let i = 0;
   for (impo in imports) {
     i++;
     await builder.compile(imports[impo], `build/${impo}.jsx`);
-    outputs[impo] = `./build/${impo}.jsx`
+    outputs[impo] = `./build/${impo}.jsx`;
     console.log(
       `║ \x1b[38;5;209m${i} \x1b[38;5;6mof \x1b[38;5;209m${
         Object.keys(imports).length
-      } \x1b[38;5;10mImported and compiled:	\x1b[38;5;38m'${impo}'\x1b[37m`,
+      } \x1b[38;5;10mImported and compiled:	\x1b[38;5;38m'${impo}'\x1b[37m`
     );
   }
   i = 0;
@@ -90,7 +91,7 @@ async function buildingBlocks() {
     if (!jsonData.enabled) {
       fs.writeFileSync(
         `plugins/${plugin}/build/plugin.jsx`,
-        `function main(Server, Content, Host, runtime) {} \n module.exports.main = main`,
+        `function main(Server, Content, Host, runtime) {} \n module.exports.main = main`
       );
     }
   });
@@ -124,21 +125,23 @@ async function buildingBlocks() {
         for (file in allFiles) {
           if (
             !allFiles[file].includes("plugin.json") &&
-            allFiles[file].includes(".jsx") && !config.pluginLazyLoader
+            allFiles[file].includes(".jsx") &&
+            !config.pluginLazyLoader
           ) {
             builder.compile(
               plugin + allFiles[file],
-              `plugins/${pluginName}/build/${allFiles[file]}`,
+              `plugins/${pluginName}/build/${allFiles[file]}`
             );
             i2++;
           }
         }
-        outputs[item] = `./plugins/${pluginName}/build/${allFiles[file]}`
-        if(!config.pluginLazyLoader) console.log(
-          `║ \x1b[38;5;209m${i} \x1b[38;5;6mof \x1b[38;5;209m${
-            Object.keys(plugins).length
-          } \x1b[38;5;10mPlugins imported and compiled:	\x1b[38;5;38m'${pluginLooseName}'\x1b[37m `,
-        );
+        outputs[item] = `./plugins/${pluginName}/build/${allFiles[file]}`;
+        if (!config.pluginLazyLoader)
+          console.log(
+            `║ \x1b[38;5;209m${i} \x1b[38;5;6mof \x1b[38;5;209m${
+              Object.keys(plugins).length
+            } \x1b[38;5;10mPlugins imported and compiled:	\x1b[38;5;38m'${pluginLooseName}'\x1b[37m `
+          );
       }
     }
   });
@@ -152,9 +155,11 @@ async function buildingBlocks() {
       this.name = name;
     }
     async main() {
-      console.log("║\x1b[31m[buildingBlocks] \x1b[33mc\x1b[32mo\x1b[36mm\x1b[34mp\x1b[35ml\x1b[31me\x1b[33mt\x1b[34me\x1b[35]!\x1b[37m");
       console.log(
-        "╚═╗[Cloud::Labs Server Function] {(Press CTRL + C) to quit}",
+        "║\x1b[31m[buildingBlocks] \x1b[33mc\x1b[32mo\x1b[36mm\x1b[34mp\x1b[35ml\x1b[31me\x1b[33mt\x1b[34me\x1b[35]!\x1b[37m"
+      );
+      console.log(
+        "╚═╗[Cloud::Labs Server Function] {(Press CTRL + C) to quit}"
       );
       await Runtime.run();
       await catcherComplete("end1").then(() => this.end());
@@ -181,20 +186,19 @@ async function waitForCompletion() {
   });
 }
 globe.time = async (name) => {
-  globe.timers[name] = Math.floor(performance.now()*10)/10
-}
+  globe.timers[name] = Math.floor(performance.now() * 10) / 10;
+};
 globe.timeEnd = async (name) => {
   const startTime = globe.timers[name];
   if (startTime) {
     const endTime = performance.now();
     const elapsedTime = endTime - startTime;
     delete globe.timers[name];
-    return Math.floor(elapsedTime*10)/10
+    return Math.floor(elapsedTime * 10) / 10;
   } else {
     console.log(`Request timer '${name}' not found.`);
   }
-  
-}
+};
 readline.emitKeypressEvents(process.stdin);
 process.stdin.setRawMode(true);
 
@@ -205,7 +209,7 @@ async function catcherComplete(pro) {
         clearInterval(interval);
 
         resolve(
-          "Promise resolved: catcher contains main and there is no timeout",
+          "Promise resolved: catcher contains main and there is no timeout"
         );
       }
     }, 1000);
@@ -213,37 +217,33 @@ async function catcherComplete(pro) {
 }
 class Host {
   constructor() {}
-  async hostFile(type, dir, asDir){
+  async hostFile(type, dir, asDir) {
     console.log(
-      `  ╠═\x1b[38;5;209m[hosting]: \x1b[38;5;6m${dir} \x1b[38;5;10m=> \x1b[38;5;38m${
-        asDir
-      } \x1b[37m`,
+      `  ╠═\x1b[38;5;209m[hosting]: \x1b[38;5;6m${dir} \x1b[38;5;10m=> \x1b[38;5;38m${asDir} \x1b[37m`
     );
-    
-    const data = await fs.promises.readFile(dir, "utf8")
-    run.create(type, asDir, async (req, res)=>{
-    let content = new Content(mime.lookup(dir))
-    content.contents(data)
-    content.send(req, res)
-    return { failsafe:true }
-    }
-  )}
-  async hostAPI(type, dir, asDir){
+
+    const data = await fs.promises.readFile(dir, "utf8");
+    run.create(type, asDir, async (req, res) => {
+      let content = new Content(mime.lookup(dir));
+      content.contents(data);
+      content.send(req, res);
+      return { failsafe: true };
+    });
+  }
+  async hostAPI(type, dir, asDir) {
     console.log(
-      `  ╠═\x1b[38;5;209m[hosting]: \x1b[38;5;6m${dir} \x1b[38;5;10m=> \x1b[38;5;38m${
-        asDir
-      } \x1b[37m`,
+      `  ╠═\x1b[38;5;209m[hosting]: \x1b[38;5;6m${dir} \x1b[38;5;10m=> \x1b[38;5;38m${asDir} \x1b[37m`
     );
-    
-    const data = await require(dir)
-    
-    run.create(type, asDir, async (req, res)=>{
-      let g = await data(req)
-      let content = new Content(g.contentType)
-      content.contents(g._G())
-      content.send(req, res)
-      return { failsafe:true }
-    })
+
+    const data = await require(dir);
+
+    run.create(type, asDir, async (req, res) => {
+      let g = await data(req);
+      let content = new Content(g.contentType);
+      content.contents(g._G());
+      content.send(req, res);
+      return { failsafe: true };
+    });
   }
   hostDir(type, dir, asDir) {
     let asDirPath;
@@ -272,9 +272,9 @@ class Host {
     console.log(
       `  ╠═\x1b[38;5;209m[hosting]: \x1b[38;5;6m.${dirPath} \x1b[38;5;10m=> \x1b[38;5;38m${
         asDir + plusDir
-      } \x1b[37m`,
+      } \x1b[37m`
     );
-    asDirPath = asDirPath
+    asDirPath = asDirPath;
     //dirPath = dirPath.replace(asDir, '');
     const files = fs.readdirSync(dir);
     files.forEach(async (file) => {
@@ -287,7 +287,7 @@ class Host {
         let data = await fs.promises.readFile(filePath, "utf8");
         const hfile = async (req, res) => {
           let html = new Content("text/html");
-          
+
           const regex = /#{{\s*(.*?)\s*}}/g;
           const replacedString = data.replace(regex, (match, p1) => {
             const replacement = p1.trim();
@@ -311,7 +311,7 @@ class Host {
         let data = await fs.promises.readFile(filePath, "utf8");
         const hfile = async (req, res) => {
           let js = new Content("text/javascript");
-          
+
           const regex = /#{{\s*(.*?)\s*}}/g;
           const replacedString = data.replace(regex, (match, p1) => {
             const replacement = p1.trim();
@@ -331,7 +331,7 @@ class Host {
         let data = await fs.promises.readFile(filePath, "utf8");
         const hfile = async (req, res) => {
           let css = new Content("text/css");
-          
+
           const regex = /#{{\s*(.*?)\s*}}/g;
           const replacedString = data.replace(regex, (match, p1) => {
             const replacement = p1.trim();
@@ -347,17 +347,16 @@ class Host {
           return { failSafe: true };
         };
         run.create(type, `${asDirPath}/${file}`, hfile);
-      } else if (file.endsWith(".jsg")){
-        let data = require("./"+filePath);
+      } else if (file.endsWith(".jsg")) {
+        let data = require("./" + filePath);
         const hfile = async (req, res) => {
-          
-          let g = await data(req)
+          let g = await data(req);
           let content = new Content(g.contentType);
-          
+
           content.contents(g._G());
           content.send(req, res);
           return { failSafe: true };
-        }
+        };
         run.create(type, `${asDir + plusDir + file}`, hfile);
       } else {
         let data;
@@ -365,7 +364,7 @@ class Host {
           let content = new Content(mime.lookup(file) || "text/plain");
           const fileSize = fs.statSync(filePath).size;
           let data = Buffer.alloc(fileSize);
-          fs.readSync(fs.openSync(filePath, 'r'), data, 0, fileSize, 0);
+          fs.readSync(fs.openSync(filePath, "r"), data, 0, fileSize, 0);
           let nonBinData = await fs.promises.readFile(filePath, "utf8");
 
           try {
@@ -381,12 +380,11 @@ class Host {
             data = replacedString;
           } catch (err) {
             console.log(
-              "  ║║╠═\x1b[38;5;209m[hosting] \x1b[33;5;196mWarn: \x1b[38;5;6mFile data is invalid or it is binary. (Not failure)\x1b[37m",
+              "  ║║╠═\x1b[38;5;209m[hosting] \x1b[33;5;196mWarn: \x1b[38;5;6mFile data is invalid or it is binary. (Not failure)\x1b[37m"
             );
           }
 
-          
-          res.setHeader('Content-Type', content.type);
+          res.setHeader("Content-Type", content.type);
           content.contents(data);
           content.send(req, res);
           return { failSafe: true };
@@ -395,23 +393,22 @@ class Host {
       }
     });
   }
-  async nuxt(dir, asDir, paths){
+  async nuxt(dir, asDir, paths) {
     const nEdge = await import(dir);
-    for (let path in paths){
-      
+    for (let path in paths) {
       const ndata = async (req, res) => {
-        let content = new Content(mime.lookup(path) || "text/plain")
-        content.contents(await nEdge.default(req, res, asDir))
-        
-        content.send(req, res)
+        let content = new Content(mime.lookup(path) || "text/plain");
+        content.contents(await nEdge.default(req, res, asDir));
+
+        content.send(req, res);
         return { failSafe: true };
-      }
+      };
       run.create("get", `${asDir}/${paths[path]}`, ndata);
     }
     console.log(
       `  \x1b[37m╠═\x1b[38;5;209m[nuxt]: \x1b[38;5;6m${dir} \x1b[38;5;10m=> \x1b[38;5;38m${asDir}\x1b[37m`
     );
-     await nEdge.start()
+    await nEdge.start();
   }
 }
 class Process {
@@ -447,20 +444,17 @@ class ServerRuntime {
     this.Function = async () => {};
   }
   async run() {
-    if(this.handler){
-      try{
+    if (this.handler) {
+      try {
         await this.Function();
-      }
-      catch(err){
+      } catch (err) {
         this.handler(err);
       }
-    }
-    else{
+    } else {
       await this.Function();
     }
-    
   }
-  handle(handler){
+  handle(handler) {
     this.handler = handler;
   }
   async sleep(ms) {
@@ -492,19 +486,19 @@ class Server {
     this.func = func;
     this.name = name;
     apps[this.name] = require("express")();
+    this.app = apps[this.name];
   }
-  create(type, path, func) {
+  create = function (type, path, func) {
     let fails = false;
-    apps[this.name].use(this.status);
+    this.app.use(this.status);
     this.paths.push(path);
-    apps[this.name][type](path, async (req, res) => {
+    this.app[type](path, async (req, res) => {
       if (!permafreeze) {
         console.log("\x1b[37m  ║║╠═\x1b[38;5;214mNew request.\x1b[37m");
-        
       }
-      
-      req.random = Math.random().toString().replace(".", "").toString()
-      globe.time(req.random)
+
+      req.random = Math.random().toString().replace(".", "").toString();
+      globe.time(req.random);
       //debug("request start")
       result = await func(req, res);
       //debug("request end ")
@@ -520,7 +514,7 @@ class Server {
       if (result.failSafe) {
         try {
           res.send(
-            "Request did not return anything. Please check your function.",
+            "Request did not return anything. Please check your function."
           );
           console.log("\x1b[37m  ║║╠═\x1b[31mRequest incomplete.");
         } catch (e) {}
@@ -528,35 +522,38 @@ class Server {
       console.log(
         `\x1b[37m  ║║╠═\x1b[38;5;10mRequest complete: ${
           req.method
-        } ${req.url.split(32)} in ${ await globe.timeEnd(req.random)}s`,
+        } ${req.url.split(32)} in ${await globe.timeEnd(req.random)}s`
       );
-      fileLog(config.logging.file, `New request: ${req.method} ${req.url} ${req.ip}`);
+      fileLog(
+        config.logging.file,
+        `New request: ${req.method} ${req.url} ${req.ip}`
+      );
       if (fails) {
         //throw ( "║║═\x1b[31mx \x1b[32mFailSafe was not created.");
       }
     });
   }
 
-  remove(path) {
+  remove = function (path) {
     let index = this.paths.indexOf(path);
     if (index > -1) {
       this.paths.splice(index, 1);
       //console.log(apps[this.name]._router.stack);
-      apps[this.name]._router.stack.splice(index + 4, 1);
+      this.app._router.stack.splice(index + 4, 1);
     } else {
       console.log(
-        `\x1b[37m  ║╠═\x1b[31mThe path ${path} does not exist in the server.`,
+        `\x1b[37m  ║╠═\x1b[31mThe path ${path} does not exist in the server.`
       );
     }
   }
-  async start(port) {
+  start = async function(port) {
     console.log("  ╠╦═\x1b[36m[Server Function] \x1b[0m");
-    apps[this.name].listen(port, () => {
+    this.app.listen(port, () => {
       console.log(
-        `\x1b[37m  ║╠╦═\x1b[38;5;13m[Running on port: ${port}]\n  \x1b[37m║║╠═\x1b[38;5;6mServer running...`,
+        `\x1b[37m  ║╠╦═\x1b[38;5;13m[Running on port: ${port}]\n  \x1b[37m║║╠═\x1b[38;5;6mServer running...`
       );
     });
-    apps[this.name].use(this.status);
+    this.app.use(this.status);
 
     process.stdin.on("keypress", (str, key) => {
       if (key.ctrl && key.name === "q" && this.active) {
@@ -592,7 +589,49 @@ class Server {
       }
     });
   }
-  async status(req, res, next) {
+  init = async function () {
+    console.log("  ╠╦═\x1b[36m[Server Function] \x1b[0m");
+    this.send = async function (req, res) {
+      return await this.app.handle(req, res, (data) => {
+        return data;
+      });
+    };
+    this.app.use(this.status);
+    process.stdin.on("keypress", (str, key) => {
+      if (key.ctrl && key.name === "q" && this.active) {
+        permafreeze = !permafreeze;
+
+        this.paused = !this.paused;
+        this.repause();
+      } else {
+      }
+    });
+    process.stdin.on("keypress", (str, key) => {
+      if (key.ctrl && key.name === "d" && this.active) {
+        console.log(process.memoryUsage());
+      } else {
+      }
+    });
+    process.stdin.on("keypress", (str, key) => {
+      if (key.ctrl && key.name === "c" && this.active) {
+        if (!permafreeze) {
+          this.end();
+          permafreeze = true;
+        }
+      } else {
+      }
+    });
+    process.stdin.on("keypress", (str, key) => {
+      if (key.ctrl && key.name === "e" && this.active) {
+        if (!complete) {
+          complete = !false;
+        } else {
+        }
+      } else {
+      }
+    });
+  }
+  status = async function (req, res, next) {
     if (permafreeze) {
       res.send("The app is paused. Please try again later.");
     } else if (frozen) {
@@ -607,34 +646,34 @@ class Server {
       }
     }
   }
-  pause() {
+  pause = function () {
     frozen = true;
     console.log("\x1b[37m  ║║╠═\x1b[38;5;44mApp connections paused");
   }
-  unpause() {
+  unpause = function() {
     frozen = false;
     console.log("\x1b[37m  ║║╠═\x1b[38;5;208mApp connections unpaused");
   }
   paused = false;
-  repause() {
+  repause = function () {
     if (this.paused) {
       this.pause();
     } else {
       this.unpause();
     }
   }
-  notFound(content) {
-    apps[this.name].all("*", async (req, res) => {
+  notFound = function (content) {
+    this.app.all("*", async (req, res) => {
       res.status(404).send(content);
     });
   }
-  to(type, path, content) {
+  to = function (type, path, content) {
     return `fetch(location.origin + "/${path}/",  ${type}, ${{
       body: content,
     }})`;
   }
-  end() {
-    apps[this.name].listen(this.port).close();
+  end = function () {
+    this.app.listen(this.port).close();
     console.log("\x1b[37m  ╠╩╩═\x1b[32;5;214mServer closed.");
     console.log("\x1b[37m  ╠════════════════════════════════╗");
     console.log("  ║\x1b[31m        Process complete.       \x1b[37m║");
@@ -643,29 +682,78 @@ class Server {
     console.log("\x1b[37m  ╠════════════════════════════════╝");
     console.log("╔═╝");
     console.timeLog("║uptime");
-    console.log("║Cloud::Labs by Renderlabs::Cloud");
+    console.log("║ELECTROServer by Renderlabs::Cloud");
     console.log("╙───────────────────────────────────");
     delete this.start;
     this.active = false;
   }
   active = true;
+  Exportable = async function () {
+    const getMethods = (obj) => {
+      let properties = new Set();
+      let currentObj = obj;
+      do {
+        Object.getOwnPropertyNames(currentObj).map((item) =>
+          properties.add(item)
+        );
+      } while ((currentObj = Object.getPrototypeOf(currentObj)));
+      return [...properties.keys()].filter(
+        (item) => typeof obj[item] === "function"
+      );
+    };
+    let Result = {}
+    let RouterResult = []
+    let methods = getMethods(this);
+    methods[methods.indexOf("hasOwnProperty")] = new Function("return 0")
+    methods[methods.indexOf("valueOf")] = new Function("return 0")
+    methods[methods.indexOf("toString")] = new Function("return 0")
+    methods[methods.indexOf("propertyIsEnumerable")] = new Function("return 0")
+    methods[methods.indexOf("isPrototypeOf")] = new Function("return 0")
+    methods[methods.indexOf("toLocaleString")] = new Function("return 0")
+    methods[methods.indexOf("__defineGetter__")] = new Function("return 0")
+    methods[methods.indexOf("__defineSetter__")] = new Function("return 0")
+    methods[methods.indexOf("__lookupGetter__")] = new Function("return 0")
+    methods[methods.indexOf("__lookupSetter__")] = new Function("return 0")
+    for(let method of methods){
+      Result[method] = this[method];
+    }
+    
+    let iR = 0
+    for(let route of this.app._router.stack){
+      RouterResult[iR] = this.app._router.stack[iR]
+      if(this.app._router.stack[iR].name.trim() == "status"||typeof this.app._router.stack[iR].router === "function"){
+        RouterResult[iR].route = new Function(`return ${this.app._router.stack[iR].route}(arguments)`);
+        RouterResult[iR].handle = new Function(`return ${this.app._router.stack[iR].handle}(arguments)`);
+      }
+      else{
+        RouterResult[iR].route = null
+        RouterResult[iR].handle = {}
+      }
+      
+      console.log(this.app._router.stack[iR].handle.toString())
+      iR++
+    }
+    let AppResult = {}
+    for(let func of ["handle", "route", "stack", "param", "use", "get", "post", "put", "delete"]){
+      AppResult[func] = function(){this.app[func](arguments)}
+    }
+    AppResult = { ...this.app, ...AppResult }
+    return { ...Result, app: {...this.app, _router: { stack:{ ...RouterResult }, handle: new Function(`${this.app._router.handle}(arguments)`) }}, router: {...this.router} }
+  }
 }
-
-
-
 
 //APP
 const WebServer = new Server(async (req, res) => {}, "WebServer");
 const Runtime = new ServerRuntime(apps["WebServer"], WebServer);
 SSR = new ssr();
-for(let text of Object.keys(SSRJSON)){
-  SSR.add(text, SSRJSON[text])
+for (let text of Object.keys(SSRJSON)) {
+  SSR.add(text, SSRJSON[text]);
 }
 run = WebServer;
 Runtime.Function = async () => {
   const loadPegio = eval(pegioData[0]);
-  const includes = Object.values(outputs)
-  includer(include, includes, Host, WebServer, Content, Runtime, SSR)
+  const includes = Object.values(outputs);
+  includer(include, includes, Host, WebServer, Content, Runtime, SSR);
   await waitForCompletion();
   WebServer.end();
   catcher.push("end1");

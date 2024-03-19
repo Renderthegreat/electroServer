@@ -60,7 +60,7 @@ function main(Server, Content, Host, runtime, SSR) {
     return { failsafe:true };
   });
   async function runner() {
-    const host = await require("./host.composable.js")
+    const host = await require("./config/host.composable.js")
     host(Host, Server, Content, runtime, SSR);
   }
   runner();
